@@ -19,7 +19,7 @@ export interface Activity {
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  styleUrls: ['home.page.scss', 'home-responsive.page.scss'],
   standalone: false
 })
 export class HomePage implements OnInit {
