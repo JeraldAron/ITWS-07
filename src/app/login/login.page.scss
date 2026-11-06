@@ -8,6 +8,10 @@
   --background: #5142bd;
 }
 
+.login-content.auth-mode {
+  --overflow: hidden;
+}
+
 .login-screen {
   position: relative;
   display: grid;
@@ -24,9 +28,12 @@
 }
 
 .login-screen.auth-mode {
-  min-height: 100vh;
-  min-height: 100dvh;
-  grid-template-rows: minmax(205px, 38dvh) minmax(355px, 1fr);
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  grid-template-rows: minmax(170px, 36dvh) minmax(0, 1fr);
   place-items: stretch;
   padding: max(22px, env(safe-area-inset-top)) 0 0;
   background: linear-gradient(150deg, #5847bd 0%, #4938aa 58%, #35277e 100%);
@@ -34,12 +41,34 @@
 }
 
 .sign-in-hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 20px clamp(16px, 6vw, 36px) 28px;
   color: #fff;
 }
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  left: clamp(16px, 6vw, 36px);
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9px;
+  padding: 0 9px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.back-button ion-icon { font-size: 16px; }
+.back-button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 .mini-brand {
   display: inline-flex;
@@ -71,7 +100,8 @@
 
 .sign-in-panel {
   z-index: 1;
-  overflow: auto;
+  min-height: 0;
+  overflow: hidden;
   border-radius: 16px 16px 0 0;
   padding: 20px 18px max(24px, env(safe-area-inset-bottom));
   background: #fff;
@@ -99,6 +129,31 @@
   font-weight: 750;
   line-height: 1.15;
 }
+
+.sign-up-panel {
+  padding-top: 20px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.sign-up-panel h2 { font-size: 23px; }
+.sign-up-panel .form-intro { margin: 3px 0 8px; font-size: 11px; }
+
+.sign-up-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 8px;
+}
+
+.sign-up-grid .sign-up-field {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  font-size: 10px;
+}
+
+.sign-up-grid .input-shell { height: 34px; }
+.sign-up-grid .form-full { grid-column: 1 / -1; }
+.sign-up-grid .password-toggle { width: 30px; height: 30px; }
+.sign-up-grid .submit-button { min-height: 36px; }
 
 .form-intro {
   margin: 6px 0 18px;
@@ -226,8 +281,7 @@
   font-weight: 750;
 }
 
-.avatar-admin { background: #e8e7ff; color: #5d50d7; }
-.avatar-member { background: #ffeadf; color: #c76c44; }
+.avatar-person { background: #e8e7ff; color: #5d50d7; }
 
 .demo-copy { display: grid; min-width: 0; gap: 2px; }
 .demo-copy strong { font-size: 11px; font-weight: 700; }
@@ -240,24 +294,51 @@
     padding: max(28px, env(safe-area-inset-top)) clamp(24px, 5vw, 72px) max(28px, env(safe-area-inset-bottom));
   }
 
-  .sign-in-hero { padding: 36px clamp(24px, 6vw, 90px); }
+  .sign-in-hero { padding: 54px clamp(24px, 6vw, 90px) 36px; }
+  .back-button { left: clamp(24px, 6vw, 90px); }
   .sign-in-hero h1 { font-size: clamp(36px, 4vw, 56px); }
 
   .sign-in-panel {
     display: grid;
-    align-items: center;
+    align-items: start;
     border-radius: 16px;
     padding: 36px clamp(24px, 4vw, 56px);
   }
 }
 
 @media (max-height: 620px) and (max-width: 759px) {
-  .login-screen.auth-mode { grid-template-rows: minmax(160px, 34dvh) minmax(355px, 1fr); }
-  .sign-in-hero { padding-top: 10px; padding-bottom: 20px; }
+  .login-screen.auth-mode { grid-template-rows: minmax(150px, 32dvh) minmax(0, 1fr); }
+  .sign-in-hero { padding-top: 10px; padding-bottom: 14px; }
   .sign-in-hero h1 { margin-top: 12px; font-size: 21px; }
-  .sign-in-panel { padding-top: 14px; }
-  .form-intro { margin-bottom: 12px; }
+  .sign-in-panel { padding-top: 10px; }
+  .form-intro { margin-bottom: 10px; }
+  .credentials-form { gap: 5px; }
+  .input-shell { height: 38px; }
+  .submit-button { min-height: 38px; }
+  .demo-accounts { margin-top: 10px; }
+  .demo-account { min-height: 42px; }
+}
+
+@media (max-width: 759px) {
+  .sign-in-panel { padding: 14px 18px max(12px, env(safe-area-inset-bottom)); }
+  .eyebrow { font-size: 10px; }
+  .sign-in-panel h2 { font-size: 24px; }
+  .form-intro { margin: 4px 0 12px; font-size: 12px; }
+  .credentials-form { gap: 6px; }
+  .credentials-form label { font-size: 10px; }
+  .input-shell { height: 40px; }
+  .submit-button { min-height: 40px; }
   .demo-accounts { margin-top: 12px; }
+  .demo-accounts > p { margin-bottom: 6px; font-size: 10px; }
+  .demo-account { min-height: 44px; }
+  .sign-up-panel { padding: 14px 18px max(8px, env(safe-area-inset-bottom)); }
+  .sign-up-panel h2 { font-size: 21px; }
+  .sign-up-panel .form-intro { margin: 2px 0 6px; font-size: 10px; }
+  .sign-up-grid { gap: 4px 8px; }
+  .sign-up-grid .sign-up-field { gap: 2px; font-size: 9px; }
+  .sign-up-grid .input-shell { height: 32px; }
+  .sign-up-grid .password-toggle { width: 26px; height: 26px; }
+  .sign-up-grid .submit-button { min-height: 34px; }
 }
 
 .welcome {

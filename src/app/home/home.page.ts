@@ -13,18 +13,7 @@ export interface Activity {
   category: string;
   status: ActivityStatus;
   priority?: Priority;
-  assignee: string;
   reminder: boolean;
-}
-
-export interface TeamMember {
-  id: number;
-  name: string;
-  email: string;
-  role: 'Admin' | 'Member';
-  active: boolean;
-  initials: string;
-  color: string;
 }
 
 @Component({
@@ -41,14 +30,13 @@ export class HomePage implements OnInit {
   statusFilter = 'All statuses';
   categoryFilter = 'All categories';
   priorityFilter = 'All priorities';
-  activityFilterTab: 'all' | 'my' | 'today' | 'upcoming' | 'overdue' | 'completed' = 'all';
+  activityFilterTab: 'all' | 'today' | 'upcoming' | 'overdue' | 'completed' = 'all';
   activitiesLayout: 'list' | 'kanban' = 'list';
   sortBy: 'date-asc' | 'date-desc' | 'priority' | 'title' = 'date-asc';
 
   isDarkMode = false;
   mobileSidebarOpen = false;
   showActivityModal = false;
-  showMemberModal = false;
   showDeleteConfirm = false;
   showNotifications = false;
   showSearchDropdown = false;
@@ -58,37 +46,31 @@ export class HomePage implements OnInit {
   toastMessage = '';
   toastUndoable = false;
   weekOffset = 0;
-  memberSearchQuery = '';
-
   activityForm: Omit<Activity, 'id'> = this.emptyForm();
-  memberForm = { name: '', email: '', role: 'Member' as 'Admin' | 'Member', color: 'blue' };
 
   readonly navItems = [
     { label: 'Overview', icon: 'grid-outline' },
     { label: 'Activities', icon: 'checkbox-outline' },
     { label: 'Calendar', icon: 'calendar-outline' },
-    { label: 'Team', icon: 'people-outline' },
     { label: 'Reports', icon: 'bar-chart-outline' },
   ];
 
   readonly categories = ['Planning', 'Design', 'Development', 'Marketing', 'Meeting', 'Personal'];
   readonly statuses: ActivityStatus[] = ['Pending', 'Ongoing', 'Completed', 'Cancelled'];
   readonly priorities: Priority[] = ['Urgent', 'High', 'Normal', 'Low'];
-  readonly memberColors = ['blue', 'peach', 'green', 'lavender', 'purple', 'teal'];
   readonly reportPeriods = ['All time', 'Last 7 days', 'Last 30 days'];
   reportPeriod = 'All time';
   reportStatusFilter = 'All statuses';
   reportCategoryFilter = 'All categories';
 
   activities: Activity[] = this.load('activity-tracker-items', this.seedActivities());
-  members: TeamMember[] = this.load('activity-tracker-members', [
-    { id: 1, name: 'Alex Morgan', email: 'alex.morgan@company.com', role: 'Admin', active: true, initials: 'AM', color: 'blue' },
-    { id: 2, name: 'Jordan Lee', email: 'jordan.lee@company.com', role: 'Member', active: true, initials: 'JL', color: 'peach' },
-    { id: 3, name: 'Taylor Kim', email: 'taylor.kim@company.com', role: 'Member', active: true, initials: 'TK', color: 'green' },
-    { id: 4, name: 'Sam Rivera', email: 'sam.rivera@company.com', role: 'Member', active: false, initials: 'SR', color: 'lavender' },
-  ]);
-
   ngOnInit(): void {
+    this.activities = this.activities.map(item => {
+      const personalActivity = { ...item } as Activity & { assignee?: string };
+      delete personalActivity.assignee;
+      return personalActivity;
+    });
+    this.save();
     const savedTheme = localStorage.getItem('dayflow-theme');
     if (savedTheme) {
       this.isDarkMode = savedTheme === 'dark';
@@ -105,7 +87,6 @@ export class HomePage implements OnInit {
       this.focusSearch();
     } else if (event.key === 'Escape') {
       this.showActivityModal = false;
-      this.showMemberModal = false;
       this.showDeleteConfirm = false;
       this.showNotifications = false;
       this.showSearchDropdown = false;
@@ -145,6 +126,7 @@ export class HomePage implements OnInit {
 
   private load<T>(key: string, fallback: T): T {
     try {
+      localStorage.removeItem('activity-tracker-members');
       const value = localStorage.getItem(key);
       return value ? JSON.parse(value) as T : fallback;
     } catch {
@@ -155,7 +137,6 @@ export class HomePage implements OnInit {
   private save(): void {
     try {
       localStorage.setItem('activity-tracker-items', JSON.stringify(this.activities));
-      localStorage.setItem('activity-tracker-members', JSON.stringify(this.members));
     } catch {
       /* Storage may be unavailable in private mode. */
     }
@@ -177,14 +158,14 @@ export class HomePage implements OnInit {
   private seedActivities(): Activity[] {
     const day = (offset: number) => this.localDay(offset);
     return [
-      { id: 1, title: 'Weekly team standup', description: 'Share updates and align on team priorities for this week.', date: day(0), time: '09:30', deadline: day(0), category: 'Meeting', status: 'Completed', priority: 'Normal', assignee: 'Alex Morgan', reminder: true },
-      { id: 2, title: 'Finalize Q4 campaign brief', description: 'Review creative direction and send the campaign brief for approval.', date: day(0), time: '11:00', deadline: day(0), category: 'Marketing', status: 'Ongoing', priority: 'High', assignee: 'Jordan Lee', reminder: true },
-      { id: 3, title: 'Product design review', description: 'Walk through the latest dashboard mockups with the product team.', date: day(0), time: '14:30', deadline: day(1), category: 'Design', status: 'Ongoing', priority: 'Normal', assignee: 'Taylor Kim', reminder: true },
-      { id: 4, title: 'Update project documentation', description: 'Capture the release notes and update the onboarding guide.', date: day(1), time: '10:00', deadline: day(2), category: 'Development', status: 'Pending', priority: 'Low', assignee: 'Sam Rivera', reminder: true },
-      { id: 5, title: 'Customer feedback synthesis', description: 'Summarize interview findings and highlight recurring themes.', date: day(2), time: '13:00', deadline: day(4), category: 'Planning', status: 'Pending', priority: 'Normal', assignee: 'Alex Morgan', reminder: false },
-      { id: 6, title: 'Homepage wireframes', description: 'Prepare the first pass of the new landing page wireframes.', date: day(3), time: '15:30', deadline: day(5), category: 'Design', status: 'Pending', priority: 'Normal', assignee: 'Taylor Kim', reminder: true },
-      { id: 7, title: 'Sprint planning', description: 'Select upcoming work and agree on the sprint goal.', date: day(-3), time: '10:00', deadline: day(-2), category: 'Planning', status: 'Completed', priority: 'Normal', assignee: 'Alex Morgan', reminder: false },
-      { id: 8, title: 'API integration check', description: 'Confirm the data contract with the engineering team.', date: day(-1), time: '16:00', deadline: day(0), category: 'Development', status: 'Pending', priority: 'Urgent', assignee: 'Jordan Lee', reminder: true },
+      { id: 1, title: 'Plan the week ahead', description: 'Choose a few priorities and map out the week.', date: day(0), time: '09:30', deadline: day(0), category: 'Planning', status: 'Completed', priority: 'Normal', reminder: true },
+      { id: 2, title: 'Finish campaign brief', description: 'Review the draft and prepare the final campaign brief.', date: day(0), time: '11:00', deadline: day(0), category: 'Personal', status: 'Ongoing', priority: 'High', reminder: true },
+      { id: 3, title: 'Review design notes', description: 'Organize the latest ideas and capture next steps.', date: day(0), time: '14:30', deadline: day(1), category: 'Planning', status: 'Ongoing', priority: 'Normal', reminder: true },
+      { id: 4, title: 'Update project notes', description: 'Write down progress and keep useful notes in one place.', date: day(1), time: '10:00', deadline: day(2), category: 'Personal', status: 'Pending', priority: 'Low', reminder: true },
+      { id: 5, title: 'Customer feedback synthesis', description: 'Summarize interview findings and highlight recurring themes.', date: day(2), time: '13:00', deadline: day(4), category: 'Planning', status: 'Pending', priority: 'Normal', reminder: false },
+      { id: 6, title: 'Make time for a walk', description: 'Take a short break and get outside for a bit.', date: day(3), time: '15:30', deadline: day(5), category: 'Personal', status: 'Pending', priority: 'Normal', reminder: true },
+      { id: 7, title: 'Reflect on recent progress', description: 'Note what went well and what to focus on next.', date: day(-3), time: '10:00', deadline: day(-2), category: 'Planning', status: 'Completed', priority: 'Normal', reminder: false },
+      { id: 8, title: 'Organize project files', description: 'Tidy up notes and keep important files easy to find.', date: day(-1), time: '16:00', deadline: day(0), category: 'Personal', status: 'Pending', priority: 'Urgent', reminder: true },
     ];
   }
 
@@ -200,15 +181,6 @@ export class HomePage implements OnInit {
   }
 
   get firstName(): string { return 'Alex'; }
-  get activeMembers(): number { return this.members.filter(member => member.active).length; }
-  get activeMembersList(): TeamMember[] { return this.members.filter(member => member.active); }
-
-  get filteredMembers(): TeamMember[] {
-    const q = this.memberSearchQuery.trim().toLowerCase();
-    if (!q) return this.members;
-    return this.members.filter(m => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.role.toLowerCase().includes(q));
-  }
-
   get completionBars(): { label: string; percent: number; count: number }[] {
     return this.categories
       .filter(category => this.activities.some(item => item.category === category))
@@ -251,17 +223,6 @@ export class HomePage implements OnInit {
       });
   }
 
-  get reportMemberLeaderboard(): { member: TeamMember; total: number; completed: number; inProgress: number; rate: number }[] {
-    return this.members.map(member => {
-      const memberActivities = this.activities.filter(a => a.assignee === member.name);
-      const total = memberActivities.length;
-      const completed = memberActivities.filter(a => a.status === 'Completed').length;
-      const inProgress = memberActivities.filter(a => a.status === 'Ongoing').length;
-      const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-      return { member, total, completed, inProgress, rate };
-    }).sort((a, b) => b.completed - a.completed);
-  }
-
   get completedCount(): number { return this.activities.filter(item => item.status === 'Completed').length; }
   get completionRate(): number { return this.activities.length ? Math.round((this.completedCount / this.activities.length) * 100) : 0; }
   get inProgressCount(): number { return this.activities.filter(item => item.status === 'Ongoing').length; }
@@ -272,7 +233,7 @@ export class HomePage implements OnInit {
     const q = this.searchQuery.trim().toLowerCase();
     if (!q) return [];
     return this.activities
-      .filter(item => `${item.title} ${item.description} ${item.assignee} ${item.category}`.toLowerCase().includes(q))
+      .filter(item => `${item.title} ${item.description} ${item.category}`.toLowerCase().includes(q))
       .slice(0, 5);
   }
 
@@ -283,7 +244,7 @@ export class HomePage implements OnInit {
     return this.activities
       .filter(item => {
         // Search filter
-        if (query && !`${item.title} ${item.description} ${item.assignee} ${item.category}`.toLowerCase().includes(query)) {
+        if (query && !`${item.title} ${item.description} ${item.category}`.toLowerCase().includes(query)) {
           return false;
         }
         // Dropdown status filter
@@ -300,8 +261,6 @@ export class HomePage implements OnInit {
         }
         // Tab filter
         switch (this.activityFilterTab) {
-          case 'my':
-            return item.assignee === this.firstName || item.assignee.startsWith(this.firstName + ' ');
           case 'today':
             return item.date === today;
           case 'upcoming':
@@ -333,10 +292,8 @@ export class HomePage implements OnInit {
     return this.activities.filter(item => item.date === this.localDay()).sort((a, b) => a.time.localeCompare(b.time));
   }
 
-  get assignedActivities(): Activity[] {
-    return this.activities
-      .filter(item => item.assignee === this.firstName || item.assignee.startsWith(this.firstName + ' '))
-      .sort((a, b) => a.date.localeCompare(b.date));
+  get personalActivities(): Activity[] {
+    return [...this.activities].sort((a, b) => a.date.localeCompare(b.date));
   }
 
   get notifications(): Activity[] {
@@ -370,10 +327,6 @@ export class HomePage implements OnInit {
 
   activitiesOnDate(key: string): Activity[] {
     return this.activities.filter(item => item.date === key).sort((a, b) => a.time.localeCompare(b.time));
-  }
-
-  activitiesForMember(name: string): Activity[] {
-    return this.activities.filter(item => item.assignee === name);
   }
 
   activitiesForCategory(category: string): Activity[] {
@@ -412,7 +365,7 @@ export class HomePage implements OnInit {
 
   downloadReport(): void {
     const rows = [
-      ['Title', 'Description', 'Date', 'Time', 'Deadline', 'Category', 'Priority', 'Status', 'Assignee'],
+      ['Title', 'Description', 'Date', 'Time', 'Deadline', 'Category', 'Priority', 'Status'],
       ...this.reportActivities.map(item => [
         item.title,
         item.description,
@@ -421,8 +374,7 @@ export class HomePage implements OnInit {
         item.deadline,
         item.category,
         item.priority || 'Normal',
-        item.status,
-        item.assignee
+        item.status
       ]),
     ];
     const csv = rows.map(row => row.map(value => `"${(value || '').toString().replaceAll('"', '""')}"`).join(',')).join('\r\n');
@@ -437,15 +389,6 @@ export class HomePage implements OnInit {
 
   printReport(): void {
     window.print();
-  }
-
-  initials(name: string): string {
-    return name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
-  }
-
-  avatarColor(name: string): string {
-    const member = this.members.find(item => item.name === name);
-    return member?.color ?? 'blue';
   }
 
   shortDate(date: string): string {
@@ -481,9 +424,6 @@ export class HomePage implements OnInit {
 
   navigateToModule(moduleName: string): void {
     switch (moduleName) {
-      case 'User Management':
-        this.setView('Team');
-        break;
       case 'Activity Management':
         this.setView('Activities');
         this.activityFilterTab = 'all';
@@ -495,10 +435,6 @@ export class HomePage implements OnInit {
         this.setView('Activities');
         this.activityFilterTab = 'all';
         this.statusFilter = 'Ongoing';
-        break;
-      case 'Task Assignment':
-        this.setView('Activities');
-        this.activityFilterTab = 'my';
         break;
       case 'Reports & Analytics':
         this.setView('Reports');
@@ -564,7 +500,6 @@ export class HomePage implements OnInit {
       category: item.category,
       status: item.status,
       priority: item.priority || 'Normal',
-      assignee: item.assignee,
       reminder: item.reminder
     };
     this.showActivityModal = true;
@@ -580,7 +515,6 @@ export class HomePage implements OnInit {
       category: 'Planning',
       status: 'Pending',
       priority: 'Normal',
-      assignee: 'Alex Morgan',
       reminder: true
     };
   }
@@ -661,50 +595,6 @@ export class HomePage implements OnInit {
       this.toastMessage = '';
       this.notify(`Restored "${title}"`);
     }
-  }
-
-  openAddMemberModal(): void {
-    this.memberForm = { name: '', email: '', role: 'Member', color: this.memberColors[Math.floor(Math.random() * this.memberColors.length)] };
-    this.showMemberModal = true;
-  }
-
-  saveMember(): void {
-    if (!this.memberForm.name.trim() || !this.memberForm.email.trim()) return;
-    const newMember: TeamMember = {
-      id: Date.now(),
-      name: this.memberForm.name.trim(),
-      email: this.memberForm.email.trim(),
-      role: this.memberForm.role,
-      active: true,
-      initials: this.initials(this.memberForm.name),
-      color: this.memberForm.color
-    };
-    this.members = [...this.members, newMember];
-    this.save();
-    this.showMemberModal = false;
-    this.notify(`Added ${newMember.name} to the team`);
-  }
-
-  deleteMember(member: TeamMember): void {
-    if (member.id === 1) {
-      this.notify('Cannot delete the primary workspace administrator');
-      return;
-    }
-    this.members = this.members.filter(m => m.id !== member.id);
-    this.save();
-    this.notify(`Removed ${member.name}`);
-  }
-
-  toggleMember(member: TeamMember): void {
-    member.active = !member.active;
-    this.save();
-    this.notify(`${member.name} is now ${member.active ? 'active' : 'inactive'}`);
-  }
-
-  changeRole(member: TeamMember, event: Event): void {
-    member.role = (event.target as HTMLSelectElement).value as 'Admin' | 'Member';
-    this.save();
-    this.notify(`${member.name}'s role updated to ${member.role}`);
   }
 
   changeWeek(offset: number): void {

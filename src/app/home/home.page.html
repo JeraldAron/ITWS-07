@@ -17,13 +17,12 @@
         </button>
       </div>
 
-      <div class="workspace-card">
-        <span class="workspace-mark">S</span>
+      <div class="workspace">
+        <span class="workspace-mark"><ion-icon name="person-outline"></ion-icon></span>
         <div class="workspace-copy">
-          <strong>Studio Workspace</strong>
-          <small><span class="online-dot"></span> Free Team Plan</small>
+          <strong>My Dayflow</strong>
+          <small>Personal activity tracker</small>
         </div>
-        <ion-icon name="chevron-down-outline" class="workspace-arrow"></ion-icon>
       </div>
 
       <p class="sidebar-caption">MAIN MENU</p>
@@ -37,7 +36,6 @@
           <ion-icon [name]="item.icon"></ion-icon>
           <span>{{ item.label }}</span>
           <span *ngIf="item.label === 'Activities'" class="nav-count">{{ activities.length }}</span>
-          <span *ngIf="item.label === 'Team'" class="nav-count">{{ members.length }}</span>
         </button>
       </nav>
 
@@ -60,9 +58,8 @@
         <span class="avatar blue">AM</span>
         <div class="profile-copy">
           <strong>Alex Morgan</strong>
-          <small>alex.morgan@company.com</small>
+          <small>Personal account</small>
         </div>
-        <span class="role-chip">Admin</span>
       </div>
     </aside>
 
@@ -75,7 +72,7 @@
             <ion-icon name="menu-outline"></ion-icon>
           </button>
           <nav class="breadcrumb" aria-label="Breadcrumb">
-            <span class="breadcrumb-root" (click)="setView('Overview')">Workspace</span>
+            <span class="breadcrumb-root" (click)="setView('Overview')">My day</span>
             <ion-icon name="chevron-forward-outline"></ion-icon>
             <span class="breadcrumb-active">{{ activeView }}</span>
             <ng-container *ngIf="activeView === 'Activities' && activityFilterTab !== 'all'">
@@ -95,7 +92,7 @@
                 [(ngModel)]="searchQuery"
                 (focus)="showSearchDropdown = true"
                 (input)="showSearchDropdown = true"
-                placeholder="Search activities, tags, assignees..."
+                placeholder="Search activities and categories..."
                 aria-label="Search activities"
               />
               <button
@@ -127,7 +124,7 @@
                   <span class="category-dot" [class]="'dot-' + getCategoryColor(item.category)"></span>
                   <div class="dropdown-item-info">
                     <strong>{{ item.title }}</strong>
-                    <small>{{ item.category }} · {{ item.assignee }} · {{ shortDate(item.date) }}</small>
+                    <small>{{ item.category }} · {{ shortDate(item.date) }}</small>
                   </div>
                   <span class="status-badge" [class]="'status-' + item.status.toLowerCase()">
                     {{ item.status }}
@@ -183,7 +180,7 @@
                   <div class="notification-item-text" (click)="openEditActivity(item); showNotifications = false">
                     <strong>{{ item.title }}</strong>
                     <small [class.text-danger]="isOverdue(item)">
-                      {{ dueLabel(item.deadline) }} · {{ item.assignee }}
+                      {{ dueLabel(item.deadline) }}
                     </small>
                   </div>
                   <button
@@ -225,7 +222,7 @@
               </div>
               <h1>{{ greeting }}, <span>{{ firstName }}</span>.</h1>
               <p class="page-subtitle">
-                Here’s what’s happening across your workspace. You have
+                Here’s what’s happening in your day. You have
                 <strong>{{ todayActivities.length }} activities</strong> on today's calendar and
                 <strong>{{ overdueCount }}</strong> needing attention.
               </p>
@@ -253,7 +250,7 @@
               <span class="stat-label">Upcoming activities</span>
               <div class="stat-bottom">
                 <span class="stat-mini-dot blue-dot"></span>
-                <span>Across {{ members.length }} team members</span>
+                <span>On your schedule</span>
                 <ion-icon name="chevron-forward-outline" class="card-chevron"></ion-icon>
               </div>
             </article>
@@ -311,45 +308,27 @@
             </article>
           </div>
 
-          <!-- Interactive Workspace Capabilities Showcase -->
+          <!-- Personal Activity Tools -->
           <div class="section-title-row">
             <div>
-              <div class="panel-kicker">WORKSPACE CAPABILITIES</div>
-              <h2>Core Activity & Team Modules</h2>
+              <div class="panel-kicker">PERSONAL ACTIVITY TOOLS</div>
+              <h2>Plan, track, and reflect</h2>
             </div>
             <span class="section-hint">Click any card to launch that workflow</span>
           </div>
 
           <div class="module-grid">
-            <article class="feature-card" (click)="navigateToModule('User Management')">
-              <div class="feature-icon icon-blue">
-                <ion-icon name="people-outline"></ion-icon>
-              </div>
-              <div class="feature-copy">
-                <div class="feature-top-meta">
-                  <span class="feature-tag">User Management</span>
-                  <span class="feature-badge">{{ activeMembers }} active</span>
-                </div>
-                <h3>Roles & Access</h3>
-                <p>Manage member profiles, configure Admin vs Member permissions, and team presence.</p>
-                <div class="feature-action-link">
-                  <span>Manage team members</span>
-                  <ion-icon name="arrow-forward-outline"></ion-icon>
-                </div>
-              </div>
-            </article>
-
             <article class="feature-card" (click)="navigateToModule('Activity Management')">
               <div class="feature-icon icon-green">
                 <ion-icon name="checkbox-outline"></ion-icon>
               </div>
               <div class="feature-copy">
                 <div class="feature-top-meta">
-                  <span class="feature-tag">Activity Management</span>
-                  <span class="feature-badge">{{ activities.length }} activities</span>
+                  <span class="feature-tag">Daily activities</span>
+                  <span class="feature-badge">{{ activities.length }} tracked</span>
                 </div>
-                <h3>Create & Organize</h3>
-                <p>Create, update, tag by category, filter with smart views, and prioritize tasks with clarity.</p>
+                <h3>Keep your day organized</h3>
+                <p>Capture personal tasks, add notes, and focus on what matters next.</p>
                 <div class="feature-action-link">
                   <span>Explore activities</span>
                   <ion-icon name="arrow-forward-outline"></ion-icon>
@@ -363,11 +342,11 @@
               </div>
               <div class="feature-copy">
                 <div class="feature-top-meta">
-                  <span class="feature-tag">Activity Scheduling</span>
-                  <span class="feature-badge">{{ calendarActivityCount }} this week</span>
+                  <span class="feature-tag">Weekly planning</span>
+                  <span class="feature-badge">{{ calendarActivityCount }} scheduled</span>
                 </div>
-                <h3>Plan & Schedule</h3>
-                <p>Map work across weekly and daily blocks, set target deadlines, and prevent schedule clashes.</p>
+                <h3>Make room for your plans</h3>
+                <p>See your week at a glance and set a realistic time for each activity.</p>
                 <div class="feature-action-link">
                   <span>Open calendar</span>
                   <ion-icon name="arrow-forward-outline"></ion-icon>
@@ -384,28 +363,10 @@
                   <span class="feature-tag">Monitoring & Tracking</span>
                   <span class="feature-badge">{{ inProgressCount }} ongoing</span>
                 </div>
-                <h3>Progress & Statuses</h3>
-                <p>Live visibility across Pending, Ongoing, Completed, and Cancelled workflow stages.</p>
+                <h3>Notice your progress</h3>
+                <p>Track what is in progress, celebrate completed activities, and reset when needed.</p>
                 <div class="feature-action-link">
                   <span>Track progress</span>
-                  <ion-icon name="arrow-forward-outline"></ion-icon>
-                </div>
-              </div>
-            </article>
-
-            <article class="feature-card" (click)="navigateToModule('Task Assignment')">
-              <div class="feature-icon icon-teal">
-                <ion-icon name="person-add-outline"></ion-icon>
-              </div>
-              <div class="feature-copy">
-                <div class="feature-top-meta">
-                  <span class="feature-tag">Task Assignment</span>
-                  <span class="feature-badge">{{ assignedActivities.length }} assigned to you</span>
-                </div>
-                <h3>Assign & Delegate</h3>
-                <p>Assign responsibilities to specific teammates and track individual contributions.</p>
-                <div class="feature-action-link">
-                  <span>View your tasks</span>
                   <ion-icon name="arrow-forward-outline"></ion-icon>
                 </div>
               </div>
@@ -488,8 +449,6 @@
                         {{ item.category }}
                       </span>
                       <span class="meta-separator">·</span>
-                      <span class="avatar avatar-small" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
-                      <span class="assignee-name">{{ item.assignee }}</span>
                     </div>
                   </div>
                   <div class="row-quick-actions">
@@ -511,7 +470,7 @@
 
               <div class="today-footer">
                 <ion-icon name="sparkles-outline"></ion-icon>
-                <span>Workspace is running smoothly with <strong>{{ completedCount }} activities completed</strong> so far.</span>
+                <span>You’ve completed <strong>{{ completedCount }} activities</strong> so far. Keep your pace steady.</span>
               </div>
             </section>
 
@@ -571,16 +530,16 @@
             <section class="panel tasks-panel">
               <div class="panel-header">
                 <div>
-                  <div class="panel-kicker">YOUR ASSIGNMENTS</div>
-                  <h2>My Tasks <span class="soft-count">{{ assignedActivities.length }}</span></h2>
+                  <div class="panel-kicker">YOUR ROUTINE</div>
+                  <h2>My Activities <span class="soft-count">{{ personalActivities.length }}</span></h2>
                 </div>
-                <button class="text-button" (click)="setView('Activities'); activityFilterTab = 'my'">
+                <button class="text-button" (click)="setView('Activities'); activityFilterTab = 'all'">
                   See all <ion-icon name="arrow-forward-outline"></ion-icon>
                 </button>
               </div>
 
               <div class="task-list">
-                <article *ngFor="let item of assignedActivities" class="task-item">
+                <article *ngFor="let item of personalActivities" class="task-item">
                   <button
                     class="task-check"
                     [class.is-complete]="item.status === 'Completed'"
@@ -611,8 +570,8 @@
                   </span>
                 </article>
 
-                <div *ngIf="!assignedActivities.length" class="empty-note">
-                  No tasks assigned to you right now.
+                <div *ngIf="!personalActivities.length" class="empty-note">
+                  Nothing planned yet. Add an activity to get started.
                 </div>
               </div>
 
@@ -621,11 +580,11 @@
               </button>
             </section>
 
-            <!-- Panel 4: Team Progress & Perspectives -->
+            <!-- Panel 4: Personal Progress -->
             <section class="panel progress-panel">
               <div class="panel-header">
                 <div>
-                  <div class="panel-kicker">TEAM PERFORMANCE</div>
+                  <div class="panel-kicker">YOUR PROGRESS</div>
                   <h2>Activity Breakdown</h2>
                 </div>
                 <button class="secondary-button btn-xs" (click)="setView('Reports')">
@@ -642,7 +601,7 @@
                 </div>
                 <div class="score-copy">
                   <strong>Great momentum!</strong>
-                  <p>{{ completedCount }} of {{ activities.length }} workspace tasks finished.</p>
+                  <p>You’ve completed {{ completedCount }} of your {{ activities.length }} activities.</p>
                   <span class="score-subchip">{{ inProgressCount }} currently underway</span>
                 </div>
               </div>
@@ -668,8 +627,8 @@
 
           <!-- Footer -->
           <footer class="page-footer">
-            <span>Built with focus for modern teams <span class="footer-heart">♥</span></span>
-            <span>{{ activeMembers }} team members active · Real-time local storage sync</span>
+            <span>A little progress, one day at a time <span class="footer-heart">♥</span></span>
+            <span>{{ activities.length }} personal activities saved on this device</span>
           </footer>
         </section>
       </ng-container>
@@ -682,9 +641,9 @@
           <!-- Page Header -->
           <div class="welcome-row">
             <div>
-              <div class="eyebrow"><span class="eyebrow-dot"></span>ACTIVITY MANAGEMENT</div>
-              <h1>Workspace Activities</h1>
-              <p class="page-subtitle">Track, filter, and advance all deliverables across your team.</p>
+              <div class="eyebrow"><span class="eyebrow-dot"></span>PERSONAL ACTIVITY TRACKER</div>
+              <h1>Your Activities</h1>
+              <p class="page-subtitle">Plan and track the things that matter to you.</p>
             </div>
             <div class="welcome-actions">
               <!-- View Mode Switcher: List vs Kanban -->
@@ -722,13 +681,6 @@
               (click)="activityFilterTab = 'all'"
             >
               All Activities <span class="tab-count">{{ activities.length }}</span>
-            </button>
-            <button
-              class="filter-tab-pill"
-              [class.active]="activityFilterTab === 'my'"
-              (click)="activityFilterTab = 'my'"
-            >
-              My Tasks <span class="tab-count">{{ assignedActivities.length }}</span>
             </button>
             <button
               class="filter-tab-pill"
@@ -812,7 +764,6 @@
           <div *ngIf="activitiesLayout === 'list'" class="panel full-list-panel">
             <div class="list-head">
               <span>ACTIVITY DETAILS</span>
-              <span>ASSIGNEE</span>
               <span>DATE & DEADLINE</span>
               <span>PRIORITY</span>
               <span>STATUS</span>
@@ -834,11 +785,6 @@
                       <span class="full-desc">{{ item.description || 'No description provided.' }}</span>
                     </div>
                   </div>
-                </div>
-
-                <div class="assignee-cell">
-                  <span class="avatar avatar-small" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
-                  <span>{{ item.assignee }}</span>
                 </div>
 
                 <div class="schedule-cell">
@@ -913,10 +859,6 @@
                   <p *ngIf="item.description" class="kanban-desc">{{ item.description }}</p>
 
                   <div class="kanban-card-bottom">
-                    <div class="kanban-assignee">
-                      <span class="avatar avatar-xs" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
-                      <small>{{ item.assignee }}</small>
-                    </div>
                     <span class="kanban-deadline" [class.text-danger]="isOverdue(item)">
                       <ion-icon name="time-outline"></ion-icon> {{ dueLabel(item.deadline) }}
                     </span>
@@ -957,7 +899,7 @@
             <div>
               <div class="eyebrow"><span class="eyebrow-dot"></span>ACTIVITY SCHEDULING</div>
               <h1>Interactive Calendar</h1>
-              <p class="page-subtitle">Schedule, drag perspective, and view tasks across team time blocks.</p>
+              <p class="page-subtitle">See your personal plans and activities across the week.</p>
             </div>
             <div class="welcome-actions">
               <button class="secondary-button" (click)="weekOffset = 0">
@@ -1013,8 +955,6 @@
                     </div>
                     <strong class="cal-act-title">{{ item.title }}</strong>
                     <div class="cal-act-footer">
-                      <span class="avatar avatar-xs" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
-                      <small>{{ item.assignee }}</small>
                     </div>
                   </button>
 
@@ -1033,134 +973,6 @@
       </ng-container>
 
       <!-- ============================================================ -->
-      <!-- VIEW: TEAM                                                  -->
-      <!-- ============================================================ -->
-      <ng-container *ngIf="activeView === 'Team'">
-        <section class="page-content inner-page">
-          <div class="welcome-row">
-            <div>
-              <div class="eyebrow"><span class="eyebrow-dot"></span>USER MANAGEMENT</div>
-              <h1>Team & Access Control</h1>
-              <p class="page-subtitle">Manage accounts, assign administrative roles, and inspect workload.</p>
-            </div>
-            <div class="welcome-actions">
-              <button class="primary-button" (click)="openAddMemberModal()">
-                <ion-icon name="person-add-outline"></ion-icon> Add Team Member
-              </button>
-            </div>
-          </div>
-
-          <div class="team-overview-stats">
-            <article class="team-stat-card">
-              <span class="stat-icon icon-blue">
-                <ion-icon name="people-outline"></ion-icon>
-              </span>
-              <div>
-                <strong>{{ activeMembers }} / {{ members.length }}</strong>
-                <span>Active Workspace Members</span>
-              </div>
-            </article>
-
-            <article class="team-stat-card">
-              <span class="stat-icon icon-green">
-                <ion-icon name="checkmark-done-outline"></ion-icon>
-              </span>
-              <div>
-                <strong>{{ completedCount }}</strong>
-                <span>Completed Deliverables</span>
-              </div>
-            </article>
-
-            <article class="team-stat-card">
-              <span class="stat-icon icon-violet">
-                <ion-icon name="sync-outline"></ion-icon>
-              </span>
-              <div>
-                <strong>{{ inProgressCount }}</strong>
-                <span>Activities Underway</span>
-              </div>
-            </article>
-          </div>
-
-          <section class="panel team-panel">
-            <div class="panel-header">
-              <div>
-                <div class="panel-kicker">TEAM DIRECTORY</div>
-                <h2>Members & Permissions <span class="soft-count">{{ filteredMembers.length }}</span></h2>
-              </div>
-              <div class="team-filter-box">
-                <label class="search-box member-search-box">
-                  <ion-icon name="search-outline"></ion-icon>
-                  <input [(ngModel)]="memberSearchQuery" placeholder="Filter members..." aria-label="Search members" />
-                </label>
-              </div>
-            </div>
-
-            <div class="team-table-head">
-              <span>MEMBER</span>
-              <span>ROLE</span>
-              <span>ASSIGNED WORK</span>
-              <span>ACCOUNT STATUS</span>
-              <span>ACTIONS</span>
-            </div>
-
-            <div class="team-members-list">
-              <article *ngFor="let member of filteredMembers" class="team-member-row">
-                <div class="member-identity">
-                  <span class="avatar member-avatar" [class]="member.color">{{ member.initials }}</span>
-                  <div class="member-info">
-                    <strong>{{ member.name }}</strong>
-                    <small>{{ member.email }}</small>
-                  </div>
-                </div>
-
-                <div class="member-role-cell">
-                  <select
-                    [value]="member.role"
-                    (change)="changeRole(member, $event)"
-                    [disabled]="member.id === 1"
-                    class="role-select"
-                    [attr.aria-label]="'Role for ' + member.name"
-                  >
-                    <option>Admin</option>
-                    <option>Member</option>
-                  </select>
-                </div>
-
-                <div class="member-activity-count-cell">
-                  <span class="pill-badge">{{ activitiesForMember(member.name).length }} activities</span>
-                </div>
-
-                <div class="member-status-cell">
-                  <button
-                    class="member-state"
-                    [class.member-inactive]="!member.active"
-                    (click)="toggleMember(member)"
-                  >
-                    <span class="state-dot"></span>
-                    {{ member.active ? 'Active' : 'Inactive' }}
-                  </button>
-                </div>
-
-                <div class="member-actions-cell">
-                  <button
-                    *ngIf="member.id !== 1"
-                    class="row-icon-btn delete-button"
-                    (click)="deleteMember(member)"
-                    title="Remove member"
-                    aria-label="Remove member"
-                  >
-                    <ion-icon name="trash-outline"></ion-icon>
-                  </button>
-                  <span *ngIf="member.id === 1" class="primary-owner-badge">Owner</span>
-                </div>
-              </article>
-            </div>
-          </section>
-        </section>
-      </ng-container>
-
-      <!-- ============================================================ -->
       <!-- VIEW: REPORTS & ANALYTICS                                   -->
       <!-- ============================================================ -->
       <ng-container *ngIf="activeView === 'Reports'">
@@ -1169,7 +981,7 @@
             <div>
               <div class="eyebrow"><span class="eyebrow-dot"></span>REPORTS & ANALYTICS</div>
               <h1>Productivity Insights</h1>
-              <p class="page-subtitle">Track velocity, task distributions, and export comprehensive team data.</p>
+              <p class="page-subtitle">Reflect on your habits, progress, and activity patterns.</p>
             </div>
             <div class="welcome-actions">
               <button class="secondary-button" (click)="printReport()">
@@ -1303,25 +1115,6 @@
                 </div>
               </div>
 
-              <!-- Team Member Velocity Leaderboard -->
-              <div class="team-leaderboard-section">
-                <div class="leaderboard-heading">
-                  <ion-icon name="trophy-outline"></ion-icon>
-                  <strong>Team Velocity & Contributions</strong>
-                </div>
-                <div class="leaderboard-list">
-                  <div *ngFor="let item of reportMemberLeaderboard" class="leaderboard-row">
-                    <div class="leaderboard-member">
-                      <span class="avatar avatar-xs" [class]="item.member.color">{{ item.member.initials }}</span>
-                      <span>{{ item.member.name }}</span>
-                    </div>
-                    <div class="leaderboard-stats">
-                      <span>{{ item.completed }} done / {{ item.total }} tasks</span>
-                      <strong class="leaderboard-rate">{{ item.rate }}%</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </section>
           </div>
         </section>
@@ -1405,15 +1198,6 @@
           </select>
         </label>
 
-        <label class="form-field">
-          <span>Assignee</span>
-          <select name="assignee" [(ngModel)]="activityForm.assignee">
-            <option *ngFor="let member of activeMembersList" [value]="member.name">
-              {{ member.name }} ({{ member.role }})
-            </option>
-          </select>
-        </label>
-
         <label class="form-field form-full">
           <span>Current Status</span>
           <select name="status" [(ngModel)]="activityForm.status">
@@ -1426,7 +1210,7 @@
           <span class="fake-toggle"></span>
           <span class="reminder-copy">
             <strong>Send gentle reminder alerts</strong>
-            <small>Show alerts in the workspace notification center before deadline.</small>
+            <small>Show a reminder before the activity deadline.</small>
           </span>
         </label>
 
@@ -1437,73 +1221,6 @@
           <button type="submit" class="primary-button" [disabled]="!activityForm.title.trim()">
             <ion-icon [name]="editingId !== null ? 'checkmark-outline' : 'add-outline'"></ion-icon>
             {{ editingId !== null ? 'Save Changes' : 'Create Activity' }}
-          </button>
-        </div>
-      </form>
-    </section>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- MODAL: ADD TEAM MEMBER                                       -->
-  <!-- ============================================================ -->
-  <div *ngIf="showMemberModal" class="modal-backdrop" (click)="showMemberModal = false">
-    <section class="activity-modal" role="dialog" aria-modal="true" aria-labelledby="member-modal-title" (click)="$event.stopPropagation()">
-      <div class="modal-heading">
-        <div>
-          <div class="panel-kicker">TEAM EXPANSION</div>
-          <h2 id="member-modal-title">Add Team Member</h2>
-        </div>
-        <button class="icon-button small-icon" aria-label="Close" (click)="showMemberModal = false">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-
-      <form (ngSubmit)="saveMember()">
-        <label class="form-field form-full">
-          <span>Full Name <i>*</i></span>
-          <input
-            name="name"
-            [(ngModel)]="memberForm.name"
-            placeholder="e.g. Maya Lin"
-            required
-            maxlength="60"
-            autofocus
-          />
-        </label>
-
-        <label class="form-field form-full">
-          <span>Work Email Address <i>*</i></span>
-          <input
-            type="email"
-            name="email"
-            [(ngModel)]="memberForm.email"
-            placeholder="e.g. maya.lin@company.com"
-            required
-            maxlength="80"
-          />
-        </label>
-
-        <label class="form-field">
-          <span>Workspace Role</span>
-          <select name="role" [(ngModel)]="memberForm.role">
-            <option value="Member">Member (standard access)</option>
-            <option value="Admin">Admin (full management)</option>
-          </select>
-        </label>
-
-        <label class="form-field">
-          <span>Avatar Theme Color</span>
-          <select name="color" [(ngModel)]="memberForm.color">
-            <option *ngFor="let c of memberColors" [value]="c">{{ c | titlecase }}</option>
-          </select>
-        </label>
-
-        <div class="modal-actions form-full">
-          <button type="button" class="secondary-button" (click)="showMemberModal = false">
-            Cancel
-          </button>
-          <button type="submit" class="primary-button" [disabled]="!memberForm.name.trim() || !memberForm.email.trim()">
-            <ion-icon name="person-add-outline"></ion-icon> Add Teammate
           </button>
         </div>
       </form>

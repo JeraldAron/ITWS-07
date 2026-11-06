@@ -1,6 +1,6 @@
-<ion-content [fullscreen]="true" class="login-content">
-  <main class="login-screen" [class.auth-mode]="showLoginForm">
-    <section class="welcome" *ngIf="!showLoginForm" aria-labelledby="brand-name">
+<ion-content [fullscreen]="true" class="login-content" [class.auth-mode]="showLoginForm || showSignUpForm">
+  <main class="login-screen" [class.auth-mode]="showLoginForm || showSignUpForm" [class.sign-up-mode]="showSignUpForm">
+    <section class="welcome" *ngIf="!showLoginForm && !showSignUpForm" aria-labelledby="brand-name">
       <div class="clock-art" role="img" aria-label="Animated clock">
         <span class="clock-orbit clock-orbit-outer"></span>
         <span class="clock-orbit clock-orbit-inner"></span>
@@ -23,13 +23,17 @@
         <button class="action-button action-primary" type="button" (click)="openSignIn()">
           Sign in
         </button>
-        <button class="action-button action-secondary" type="button" (click)="continueToApp()">
+        <button class="action-button action-secondary" type="button" (click)="openSignUp()">
           Sign up
         </button>
       </div>
     </section>
 
-    <section class="sign-in-hero" *ngIf="showLoginForm" aria-labelledby="sign-in-title">
+    <section class="sign-in-hero" *ngIf="showLoginForm || showSignUpForm" aria-labelledby="sign-in-title">
+      <button class="back-button" type="button" (click)="backToWelcome()">
+        <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
+        <span>Back</span>
+      </button>
       <div class="mini-brand" aria-label="Dayflow">
         <span class="mini-brand-mark" aria-hidden="true"><ion-icon name="time-outline"></ion-icon></span>
         <span>day flow</span>
@@ -39,7 +43,7 @@
 
     <section class="sign-in-panel" *ngIf="showLoginForm" aria-labelledby="welcome-title">
       <div class="sign-in-form-wrap">
-        <p class="eyebrow">Workspace sign in</p>
+        <p class="eyebrow">Personal sign in</p>
         <h2 id="welcome-title">Welcome back</h2>
         <p class="form-intro">Enter your account to open dayflow.</p>
 
@@ -70,17 +74,83 @@
 
         <div class="demo-accounts">
           <p>Or continue with a demo account</p>
-          <button class="demo-account" type="button" (click)="signInAsDemo('alex')">
-            <span class="avatar avatar-admin">AM</span>
-            <span class="demo-copy"><strong>Alex Morgan</strong><small>Admin · alex.morgan&#64;company.com</small></span>
-            <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
-          </button>
-          <button class="demo-account" type="button" (click)="signInAsDemo('jordan')">
-            <span class="avatar avatar-member">JL</span>
-            <span class="demo-copy"><strong>Jordan Lee</strong><small>Member · jordan.lee&#64;company.com</small></span>
+          <button class="demo-account" type="button" (click)="signInAsDemo()">
+            <span class="avatar avatar-person">AM</span>
+            <span class="demo-copy"><strong>Alex Morgan</strong><small>Personal activity tracker</small></span>
             <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
           </button>
         </div>
+      </div>
+    </section>
+
+    <section class="sign-in-panel sign-up-panel" *ngIf="showSignUpForm" aria-labelledby="sign-up-title">
+      <div class="sign-in-form-wrap">
+        <p class="eyebrow">Personal account</p>
+        <h2 id="sign-up-title">Create account</h2>
+        <p class="form-intro">A few details to get your dayflow started.</p>
+
+        <form class="credentials-form sign-up-grid" (ngSubmit)="continueToApp()">
+          <label class="sign-up-field" for="first-name">
+            <span>First name</span>
+            <div class="input-shell">
+              <input #firstNameInput id="first-name" name="firstName" type="text" autocomplete="given-name"
+                [value]="signUp.firstName" (input)="signUp.firstName = firstNameInput.value" required />
+            </div>
+          </label>
+
+          <label class="sign-up-field" for="last-name">
+            <span>Last name</span>
+            <div class="input-shell">
+              <input #lastNameInput id="last-name" name="lastName" type="text" autocomplete="family-name"
+                [value]="signUp.lastName" (input)="signUp.lastName = lastNameInput.value" required />
+            </div>
+          </label>
+
+          <label class="sign-up-field" for="middle-initial">
+            <span>Middle initial</span>
+            <div class="input-shell">
+              <input #middleInitialInput id="middle-initial" name="middleInitial" type="text" autocomplete="additional-name"
+                maxlength="1" [value]="signUp.middleInitial"
+                (input)="signUp.middleInitial = middleInitialInput.value.toUpperCase()" required />
+            </div>
+          </label>
+
+          <label class="sign-up-field" for="age">
+            <span>Age</span>
+            <div class="input-shell">
+              <input #ageInput id="age" name="age" type="number" inputmode="numeric" min="1" max="120"
+                [value]="signUp.age" (input)="signUp.age = ageInput.value" required />
+            </div>
+          </label>
+
+          <label class="sign-up-field form-full" for="sign-up-email">
+            <span>Email</span>
+            <div class="input-shell">
+              <ion-icon name="mail-outline" aria-hidden="true"></ion-icon>
+              <input #signUpEmailInput id="sign-up-email" name="signUpEmail" type="email" autocomplete="email"
+                [value]="signUp.email" (input)="signUp.email = signUpEmailInput.value" required />
+            </div>
+          </label>
+
+          <label class="sign-up-field form-full" for="sign-up-password">
+            <span>Password</span>
+            <div class="input-shell">
+              <ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
+              <input #signUpPasswordInput id="sign-up-password" name="signUpPassword"
+                [type]="showPassword ? 'text' : 'password'" autocomplete="new-password"
+                [value]="signUp.password" (input)="signUp.password = signUpPasswordInput.value" required />
+              <button class="password-toggle" type="button" (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+                [attr.aria-pressed]="showPassword">
+                <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+          </label>
+
+          <button class="submit-button form-full" type="submit">
+            Create account <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </form>
       </div>
     </section>
   </main>
