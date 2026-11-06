@@ -1,0 +1,1549 @@
+<ion-content [fullscreen]="true" class="app-content">
+  <div class="app-shell" [class.sidebar-open]="mobileSidebarOpen">
+    <!-- Sidebar Backdrop for Mobile -->
+    <div class="sidebar-backdrop" *ngIf="mobileSidebarOpen" (click)="closeMobileSidebar()"></div>
+
+    <!-- Main Navigation Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <a class="brand" href="#" (click)="$event.preventDefault(); setView('Overview')">
+          <span class="brand-icon">
+            <ion-icon name="radio-button-on-outline"></ion-icon>
+          </span>
+          <span class="brand-name">day<span class="brand-accent">flow</span></span>
+        </a>
+        <button class="icon-button mobile-close-btn" (click)="closeMobileSidebar()" aria-label="Close sidebar">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="workspace-card">
+        <span class="workspace-mark">S</span>
+        <div class="workspace-copy">
+          <strong>Studio Workspace</strong>
+          <small><span class="online-dot"></span> Free Team Plan</small>
+        </div>
+        <ion-icon name="chevron-down-outline" class="workspace-arrow"></ion-icon>
+      </div>
+
+      <p class="sidebar-caption">MAIN MENU</p>
+      <nav class="side-nav" aria-label="Main navigation">
+        <button
+          *ngFor="let item of navItems"
+          class="nav-link"
+          [class.selected]="activeView === item.label"
+          (click)="setView(item.label)"
+        >
+          <ion-icon [name]="item.icon"></ion-icon>
+          <span>{{ item.label }}</span>
+          <span *ngIf="item.label === 'Activities'" class="nav-count">{{ activities.length }}</span>
+          <span *ngIf="item.label === 'Team'" class="nav-count">{{ members.length }}</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <!-- Quick Stats Card in Sidebar -->
+      <div class="side-stats-card">
+        <div class="side-stats-header">
+          <span>Weekly Focus</span>
+          <strong>{{ completionRate }}%</strong>
+        </div>
+        <div class="side-progress-bar">
+          <span [style.width.%]="completionRate"></span>
+        </div>
+        <p>{{ completedCount }} of {{ activities.length }} activities completed</p>
+      </div>
+
+      <!-- User Profile Card -->
+      <div class="profile-card">
+        <span class="avatar blue">AM</span>
+        <div class="profile-copy">
+          <strong>Alex Morgan</strong>
+          <small>alex.morgan@company.com</small>
+        </div>
+        <span class="role-chip">Admin</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-area">
+      <!-- Sticky Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-button hamburger-btn" (click)="toggleMobileSidebar()" aria-label="Toggle navigation menu">
+            <ion-icon name="menu-outline"></ion-icon>
+          </button>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb-root" (click)="setView('Overview')">Workspace</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+            <span class="breadcrumb-active">{{ activeView }}</span>
+            <ng-container *ngIf="activeView === 'Activities' && activityFilterTab !== 'all'">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+              <span class="breadcrumb-pill">{{ activityFilterTab | titlecase }}</span>
+            </ng-container>
+          </nav>
+        </div>
+
+        <div class="topbar-actions">
+          <!-- Global Search with Shortcut & Dropdown -->
+          <div class="search-container">
+            <label class="search-box">
+              <ion-icon name="search-outline"></ion-icon>
+              <input
+                #searchInput
+                [(ngModel)]="searchQuery"
+                (focus)="showSearchDropdown = true"
+                (input)="showSearchDropdown = true"
+                placeholder="Search activities, tags, assignees..."
+                aria-label="Search activities"
+              />
+              <button
+                *ngIf="searchQuery"
+                type="button"
+                class="search-clear-btn"
+                (click)="clearSearch()"
+                aria-label="Clear search"
+              >
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </button>
+              <kbd class="shortcut-key">⌘ K</kbd>
+            </label>
+
+            <!-- Search Dropdown Quick Preview -->
+            <div *ngIf="showSearchDropdown && searchQuery.trim()" class="search-dropdown-menu">
+              <div class="dropdown-header">
+                <span>Matching Activities ({{ searchDropdownResults.length }})</span>
+                <button class="text-btn-sm" (click)="setView('Activities'); showSearchDropdown = false">
+                  View in table →
+                </button>
+              </div>
+              <div class="dropdown-list">
+                <button
+                  *ngFor="let item of searchDropdownResults"
+                  class="dropdown-item"
+                  (click)="selectSearchResult(item)"
+                >
+                  <span class="category-dot" [class]="'dot-' + getCategoryColor(item.category)"></span>
+                  <div class="dropdown-item-info">
+                    <strong>{{ item.title }}</strong>
+                    <small>{{ item.category }} · {{ item.assignee }} · {{ shortDate(item.date) }}</small>
+                  </div>
+                  <span class="status-badge" [class]="'status-' + item.status.toLowerCase()">
+                    {{ item.status }}
+                  </span>
+                </button>
+                <div *ngIf="!searchDropdownResults.length" class="empty-dropdown">
+                  No matching activities found for "{{ searchQuery }}".
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Theme Toggle Button -->
+          <button
+            class="icon-button theme-toggle-btn"
+            [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+            (click)="toggleTheme()"
+            [title]="isDarkMode ? 'Light Mode' : 'Dark Mode'"
+          >
+            <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+          </button>
+
+          <!-- Notifications Bell -->
+          <div class="notifications-wrapper">
+            <button
+              class="icon-button notification-button"
+              aria-label="Notifications"
+              (click)="showNotifications = !showNotifications"
+              [class.active]="showNotifications"
+            >
+              <ion-icon name="notifications-outline"></ion-icon>
+              <span *ngIf="notifications.length" class="notification-badge">{{ notifications.length }}</span>
+            </button>
+
+            <!-- Notifications Popover -->
+            <div *ngIf="showNotifications" class="notification-popover">
+              <div class="popover-heading">
+                <div>
+                  <strong>Reminders & Due Dates</strong>
+                  <p>{{ notifications.length }} active alerts</p>
+                </div>
+                <button
+                  *ngIf="notifications.length"
+                  class="text-btn-sm"
+                  (click)="markAllNotificationsRead()"
+                >
+                  Clear all
+                </button>
+              </div>
+              <div class="notification-items-scroll">
+                <div *ngFor="let item of notifications" class="notification-item">
+                  <span class="notification-dot" [class.dot-overdue]="isOverdue(item)"></span>
+                  <div class="notification-item-text" (click)="openEditActivity(item); showNotifications = false">
+                    <strong>{{ item.title }}</strong>
+                    <small [class.text-danger]="isOverdue(item)">
+                      {{ dueLabel(item.deadline) }} · {{ item.assignee }}
+                    </small>
+                  </div>
+                  <button
+                    class="notification-dismiss-btn"
+                    (click)="dismissNotification(item)"
+                    title="Dismiss reminder"
+                    aria-label="Dismiss"
+                  >
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </button>
+                </div>
+                <div *ngIf="!notifications.length" class="empty-note">
+                  <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+                  <span>You're all caught up! No pending reminders.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick "+ New" Activity Button in Topbar -->
+          <button class="primary-button topbar-add-btn" (click)="openNewActivity()">
+            <ion-icon name="add-outline"></ion-icon>
+            <span>New Activity</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: OVERVIEW                                              -->
+      <!-- ============================================================ -->
+      <ng-container *ngIf="activeView === 'Overview'">
+        <section class="page-content">
+          <!-- Welcome Hero Row -->
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                <span>{{ todayLabel }}</span>
+              </div>
+              <h1>{{ greeting }}, <span>{{ firstName }}</span>.</h1>
+              <p class="page-subtitle">
+                Here’s what’s happening across your workspace. You have
+                <strong>{{ todayActivities.length }} activities</strong> on today's calendar and
+                <strong>{{ overdueCount }}</strong> needing attention.
+              </p>
+            </div>
+            <div class="welcome-actions">
+              <button class="secondary-button" (click)="setView('Reports')">
+                <ion-icon name="bar-chart-outline"></ion-icon> Analytics
+              </button>
+              <button class="primary-button" (click)="openNewActivity()">
+                <ion-icon name="add-outline"></ion-icon> Create Activity
+              </button>
+            </div>
+          </div>
+
+          <!-- Top KPI Stats Grid (Interactive) -->
+          <div class="stats-grid">
+            <article class="stat-card" (click)="setView('Activities'); activityFilterTab = 'upcoming'" title="Click to view upcoming">
+              <div class="stat-top">
+                <span class="stat-icon icon-blue">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                </span>
+                <span class="stat-trend">This week <ion-icon name="arrow-up-outline"></ion-icon></span>
+              </div>
+              <strong class="stat-value">{{ upcomingCount }}</strong>
+              <span class="stat-label">Upcoming activities</span>
+              <div class="stat-bottom">
+                <span class="stat-mini-dot blue-dot"></span>
+                <span>Across {{ members.length }} team members</span>
+                <ion-icon name="chevron-forward-outline" class="card-chevron"></ion-icon>
+              </div>
+            </article>
+
+            <article class="stat-card" (click)="setView('Activities'); activityFilterTab = 'completed'" title="Click to view completed">
+              <div class="stat-top">
+                <span class="stat-icon icon-green">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                </span>
+                <span class="stat-chip green-chip">On track</span>
+              </div>
+              <strong class="stat-value">{{ completionRate }}<small>%</small></strong>
+              <span class="stat-label">Completion rate</span>
+              <div class="mini-progress">
+                <span [style.width.%]="completionRate"></span>
+              </div>
+              <div class="stat-bottom">
+                <span>{{ completedCount }} done · {{ activities.length }} total</span>
+                <ion-icon name="chevron-forward-outline" class="card-chevron"></ion-icon>
+              </div>
+            </article>
+
+            <article class="stat-card" (click)="setView('Activities'); statusFilter = 'Ongoing'" title="Click to view ongoing">
+              <div class="stat-top">
+                <span class="stat-icon icon-violet">
+                  <ion-icon name="sync-outline"></ion-icon>
+                </span>
+                <span class="stat-chip violet-chip">In progress</span>
+              </div>
+              <strong class="stat-value">{{ inProgressCount }}</strong>
+              <span class="stat-label">Activities in progress</span>
+              <div class="stat-bottom">
+                <span class="stat-mini-dot violet-dot"></span>
+                <span>Moving forward now</span>
+                <ion-icon name="chevron-forward-outline" class="card-chevron"></ion-icon>
+              </div>
+            </article>
+
+            <article class="stat-card" [class.stat-card-alert]="overdueCount > 0" (click)="setView('Activities'); activityFilterTab = 'overdue'" title="Click to view overdue">
+              <div class="stat-top">
+                <span class="stat-icon icon-orange">
+                  <ion-icon name="time-outline"></ion-icon>
+                </span>
+                <span class="stat-chip orange-chip" [class.danger-chip]="overdueCount > 0">
+                  {{ overdueCount > 0 ? 'Needs attention' : 'All caught up' }}
+                </span>
+              </div>
+              <strong class="stat-value">{{ overdueCount }}</strong>
+              <span class="stat-label">Overdue activities</span>
+              <div class="stat-bottom">
+                <span class="stat-mini-dot orange-dot"></span>
+                <span>Past due deadline</span>
+                <ion-icon name="chevron-forward-outline" class="card-chevron"></ion-icon>
+              </div>
+            </article>
+          </div>
+
+          <!-- Interactive Workspace Capabilities Showcase -->
+          <div class="section-title-row">
+            <div>
+              <div class="panel-kicker">WORKSPACE CAPABILITIES</div>
+              <h2>Core Activity & Team Modules</h2>
+            </div>
+            <span class="section-hint">Click any card to launch that workflow</span>
+          </div>
+
+          <div class="module-grid">
+            <article class="feature-card" (click)="navigateToModule('User Management')">
+              <div class="feature-icon icon-blue">
+                <ion-icon name="people-outline"></ion-icon>
+              </div>
+              <div class="feature-copy">
+                <div class="feature-top-meta">
+                  <span class="feature-tag">User Management</span>
+                  <span class="feature-badge">{{ activeMembers }} active</span>
+                </div>
+                <h3>Roles & Access</h3>
+                <p>Manage member profiles, configure Admin vs Member permissions, and team presence.</p>
+                <div class="feature-action-link">
+                  <span>Manage team members</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card" (click)="navigateToModule('Activity Management')">
+              <div class="feature-icon icon-green">
+                <ion-icon name="checkbox-outline"></ion-icon>
+              </div>
+              <div class="feature-copy">
+                <div class="feature-top-meta">
+                  <span class="feature-tag">Activity Management</span>
+                  <span class="feature-badge">{{ activities.length }} activities</span>
+                </div>
+                <h3>Create & Organize</h3>
+                <p>Create, update, tag by category, filter with smart views, and prioritize tasks with clarity.</p>
+                <div class="feature-action-link">
+                  <span>Explore activities</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card" (click)="navigateToModule('Activity Scheduling')">
+              <div class="feature-icon icon-violet">
+                <ion-icon name="calendar-outline"></ion-icon>
+              </div>
+              <div class="feature-copy">
+                <div class="feature-top-meta">
+                  <span class="feature-tag">Activity Scheduling</span>
+                  <span class="feature-badge">{{ calendarActivityCount }} this week</span>
+                </div>
+                <h3>Plan & Schedule</h3>
+                <p>Map work across weekly and daily blocks, set target deadlines, and prevent schedule clashes.</p>
+                <div class="feature-action-link">
+                  <span>Open calendar</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card" (click)="navigateToModule('Monitoring & Tracking')">
+              <div class="feature-icon icon-orange">
+                <ion-icon name="pulse-outline"></ion-icon>
+              </div>
+              <div class="feature-copy">
+                <div class="feature-top-meta">
+                  <span class="feature-tag">Monitoring & Tracking</span>
+                  <span class="feature-badge">{{ inProgressCount }} ongoing</span>
+                </div>
+                <h3>Progress & Statuses</h3>
+                <p>Live visibility across Pending, Ongoing, Completed, and Cancelled workflow stages.</p>
+                <div class="feature-action-link">
+                  <span>Track progress</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card" (click)="navigateToModule('Task Assignment')">
+              <div class="feature-icon icon-teal">
+                <ion-icon name="person-add-outline"></ion-icon>
+              </div>
+              <div class="feature-copy">
+                <div class="feature-top-meta">
+                  <span class="feature-tag">Task Assignment</span>
+                  <span class="feature-badge">{{ assignedActivities.length }} assigned to you</span>
+                </div>
+                <h3>Assign & Delegate</h3>
+                <p>Assign responsibilities to specific teammates and track individual contributions.</p>
+                <div class="feature-action-link">
+                  <span>View your tasks</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card" (click)="navigateToModule('Reports & Analytics')">
+              <div class="feature-icon icon-pink">
+                <ion-icon name="bar-chart-outline"></ion-icon>
+              </div>
+              <div class="feature-copy">
+                <div class="feature-top-meta">
+                  <span class="feature-tag">Reports & Analytics</span>
+                  <span class="feature-badge">{{ completionRate }}% rate</span>
+                </div>
+                <h3>Measure & Export</h3>
+                <p>Generate summary breakdowns, track completion ratios, and export clean CSV reports.</p>
+                <div class="feature-action-link">
+                  <span>View analytics</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card" (click)="navigateToModule('Notifications & Reminders')">
+              <div class="feature-icon icon-amber">
+                <ion-icon name="notifications-outline"></ion-icon>
+              </div>
+              <div class="feature-copy">
+                <div class="feature-top-meta">
+                  <span class="feature-tag">Notifications & Reminders</span>
+                  <span class="feature-badge">{{ notifications.length }} active</span>
+                </div>
+                <h3>Due Date Alerts</h3>
+                <p>Gentle reminders for upcoming deadlines and alerts for overdue milestones.</p>
+                <div class="feature-action-link">
+                  <span>Review alerts</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Main Dashboard 4-Panel Grid -->
+          <div class="content-grid">
+            <!-- Panel 1: Today's Activities -->
+            <section class="panel today-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-kicker"><span class="live-dot"></span> TODAY'S TIMELINE</div>
+                  <h2>Today's Activities <span class="soft-count">{{ todayActivities.length }}</span></h2>
+                </div>
+                <div class="panel-header-actions">
+                  <button class="text-button" (click)="openNewActivity()">
+                    <ion-icon name="add-outline"></ion-icon> Add
+                  </button>
+                  <button class="text-button" (click)="setView('Activities')">
+                    View all <ion-icon name="arrow-forward-outline"></ion-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div class="today-list">
+                <article *ngFor="let item of todayActivities" class="activity-row">
+                  <div class="activity-time">{{ item.time }}</div>
+                  <div class="activity-marker" [class]="'marker-' + getCategoryColor(item.category)">
+                    <span></span>
+                  </div>
+                  <div class="activity-main">
+                    <div class="activity-title-row">
+                      <button class="activity-title" (click)="openEditActivity(item)">{{ item.title }}</button>
+                      <span class="status-badge" [class]="'status-' + item.status.toLowerCase()">
+                        {{ item.status }}
+                      </span>
+                      <span *ngIf="item.priority && item.priority !== 'Normal'" class="priority-badge" [class]="getPriorityBadgeClass(item.priority)">
+                        {{ item.priority }}
+                      </span>
+                    </div>
+                    <div class="activity-meta">
+                      <span class="category-pill-sm" [class]="'cat-pill-' + getCategoryColor(item.category)">
+                        {{ item.category }}
+                      </span>
+                      <span class="meta-separator">·</span>
+                      <span class="avatar avatar-small" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
+                      <span class="assignee-name">{{ item.assignee }}</span>
+                    </div>
+                  </div>
+                  <div class="row-quick-actions">
+                    <button class="row-icon-btn" title="Edit activity" (click)="openEditActivity(item)">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </button>
+                  </div>
+                </article>
+
+                <div *ngIf="!todayActivities.length" class="empty-state">
+                  <span class="empty-icon"><ion-icon name="sunny-outline"></ion-icon></span>
+                  <strong>Clear skies for today!</strong>
+                  <p>Nothing scheduled on today's calendar. Enjoy the breather or plan ahead.</p>
+                  <button class="primary-button btn-sm" (click)="openNewActivity()">
+                    <ion-icon name="add-outline"></ion-icon> Schedule activity
+                  </button>
+                </div>
+              </div>
+
+              <div class="today-footer">
+                <ion-icon name="sparkles-outline"></ion-icon>
+                <span>Workspace is running smoothly with <strong>{{ completedCount }} activities completed</strong> so far.</span>
+              </div>
+            </section>
+
+            <!-- Panel 2: Weekly Schedule Preview -->
+            <section class="panel calendar-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-kicker">WEEK AT A GLANCE</div>
+                  <h2>Weekly Schedule</h2>
+                </div>
+                <div class="week-actions">
+                  <button class="icon-button small-icon" aria-label="Previous week" (click)="changeWeek(-1)">
+                    <ion-icon name="chevron-back-outline"></ion-icon>
+                  </button>
+                  <button class="icon-button small-icon" aria-label="Next week" (click)="changeWeek(1)">
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div class="week-caption">
+                {{ weekLabel }} <span>· {{ calendarActivityCount }} activities planned</span>
+              </div>
+
+              <div class="week-grid">
+                <div
+                  *ngFor="let day of weekDays"
+                  class="week-day"
+                  [class.current-day]="day.key === todayKey"
+                  (click)="quickAddOnDate(day.key)"
+                  title="Click to schedule on {{ day.label }}"
+                >
+                  <span class="weekday-name">{{ day.label }}</span>
+                  <span class="weekday-number">{{ day.day }}</span>
+                  <div class="day-events">
+                    <span
+                      *ngFor="let item of day.items"
+                      class="day-event"
+                      [class]="'day-event event-' + getCategoryColor(item.category)"
+                      [title]="item.title"
+                    >
+                      {{ item.title }}
+                    </span>
+                    <span *ngIf="activitiesOnDate(day.key).length > 2" class="more-events">
+                      +{{ activitiesOnDate(day.key).length - 2 }} more
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <button class="calendar-link" (click)="setView('Calendar')">
+                Open full interactive calendar <ion-icon name="arrow-forward-outline"></ion-icon>
+              </button>
+            </section>
+
+            <!-- Panel 3: My Tasks Checklist -->
+            <section class="panel tasks-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-kicker">YOUR ASSIGNMENTS</div>
+                  <h2>My Tasks <span class="soft-count">{{ assignedActivities.length }}</span></h2>
+                </div>
+                <button class="text-button" (click)="setView('Activities'); activityFilterTab = 'my'">
+                  See all <ion-icon name="arrow-forward-outline"></ion-icon>
+                </button>
+              </div>
+
+              <div class="task-list">
+                <article *ngFor="let item of assignedActivities" class="task-item">
+                  <button
+                    class="task-check"
+                    [class.is-complete]="item.status === 'Completed'"
+                    [attr.aria-label]="'Mark ' + item.title + ' complete'"
+                    (click)="toggleTask(item)"
+                    title="Toggle completion status"
+                  >
+                    <ion-icon *ngIf="item.status === 'Completed'" name="checkmark-outline"></ion-icon>
+                  </button>
+                  <div class="task-copy">
+                    <button
+                      class="task-title"
+                      [class.completed-title]="item.status === 'Completed'"
+                      (click)="openEditActivity(item)"
+                    >
+                      {{ item.title }}
+                    </button>
+                    <div class="task-subtext">
+                      <span class="category-pill-xs" [class]="'cat-pill-' + getCategoryColor(item.category)">
+                        {{ item.category }}
+                      </span>
+                      <i>·</i>
+                      <span [class.text-danger]="isOverdue(item)">{{ dueLabel(item.deadline) }}</span>
+                    </div>
+                  </div>
+                  <span class="priority-badge" [class]="getPriorityBadgeClass(item.priority)">
+                    {{ item.priority || 'Normal' }}
+                  </span>
+                </article>
+
+                <div *ngIf="!assignedActivities.length" class="empty-note">
+                  No tasks assigned to you right now.
+                </div>
+              </div>
+
+              <button class="add-task-button" (click)="openNewActivity()">
+                <ion-icon name="add-outline"></ion-icon> Add a task for yourself
+              </button>
+            </section>
+
+            <!-- Panel 4: Team Progress & Perspectives -->
+            <section class="panel progress-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-kicker">TEAM PERFORMANCE</div>
+                  <h2>Activity Breakdown</h2>
+                </div>
+                <button class="secondary-button btn-xs" (click)="setView('Reports')">
+                  Full Analytics <ion-icon name="arrow-forward-outline"></ion-icon>
+                </button>
+              </div>
+
+              <div class="team-progress-score">
+                <div class="progress-ring" [style.--progress]="completionRate + '%'">
+                  <div class="progress-ring-inner">
+                    <strong>{{ completionRate }}<small>%</small></strong>
+                    <span>complete</span>
+                  </div>
+                </div>
+                <div class="score-copy">
+                  <strong>Great momentum!</strong>
+                  <p>{{ completedCount }} of {{ activities.length }} workspace tasks finished.</p>
+                  <span class="score-subchip">{{ inProgressCount }} currently underway</span>
+                </div>
+              </div>
+
+              <div class="progress-breakdown">
+                <div *ngFor="let row of completionBars" class="breakdown-row">
+                  <div class="breakdown-top">
+                    <span class="breakdown-label">
+                      <span class="category-dot" [class]="'dot-' + getCategoryColor(row.label)"></span>
+                      {{ row.label }}
+                    </span>
+                    <span class="breakdown-stat">
+                      {{ row.count }} completed <strong>{{ row.percent }}%</strong>
+                    </span>
+                  </div>
+                  <div class="breakdown-bar">
+                    <span [style.width.%]="row.percent" [class]="'bar-' + getCategoryColor(row.label)"></span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Footer -->
+          <footer class="page-footer">
+            <span>Built with focus for modern teams <span class="footer-heart">♥</span></span>
+            <span>{{ activeMembers }} team members active · Real-time local storage sync</span>
+          </footer>
+        </section>
+      </ng-container>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: ACTIVITIES (Table & Kanban Views)                     -->
+      <!-- ============================================================ -->
+      <ng-container *ngIf="activeView === 'Activities'">
+        <section class="page-content inner-page">
+          <!-- Page Header -->
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-dot"></span>ACTIVITY MANAGEMENT</div>
+              <h1>Workspace Activities</h1>
+              <p class="page-subtitle">Track, filter, and advance all deliverables across your team.</p>
+            </div>
+            <div class="welcome-actions">
+              <!-- View Mode Switcher: List vs Kanban -->
+              <div class="view-mode-toggle" role="group" aria-label="Layout view">
+                <button
+                  type="button"
+                  class="toggle-btn"
+                  [class.active]="activitiesLayout === 'list'"
+                  (click)="activitiesLayout = 'list'"
+                  title="Table List View"
+                >
+                  <ion-icon name="list-outline"></ion-icon> List
+                </button>
+                <button
+                  type="button"
+                  class="toggle-btn"
+                  [class.active]="activitiesLayout === 'kanban'"
+                  (click)="activitiesLayout = 'kanban'"
+                  title="Kanban Board View"
+                >
+                  <ion-icon name="apps-outline"></ion-icon> Kanban
+                </button>
+              </div>
+              <button class="primary-button" (click)="openNewActivity()">
+                <ion-icon name="add-outline"></ion-icon> New Activity
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Filter Tabs (Pills) -->
+          <div class="filter-tabs-row">
+            <button
+              class="filter-tab-pill"
+              [class.active]="activityFilterTab === 'all'"
+              (click)="activityFilterTab = 'all'"
+            >
+              All Activities <span class="tab-count">{{ activities.length }}</span>
+            </button>
+            <button
+              class="filter-tab-pill"
+              [class.active]="activityFilterTab === 'my'"
+              (click)="activityFilterTab = 'my'"
+            >
+              My Tasks <span class="tab-count">{{ assignedActivities.length }}</span>
+            </button>
+            <button
+              class="filter-tab-pill"
+              [class.active]="activityFilterTab === 'today'"
+              (click)="activityFilterTab = 'today'"
+            >
+              Due Today <span class="tab-count">{{ todayActivities.length }}</span>
+            </button>
+            <button
+              class="filter-tab-pill"
+              [class.active]="activityFilterTab === 'upcoming'"
+              (click)="activityFilterTab = 'upcoming'"
+            >
+              Upcoming <span class="tab-count">{{ upcomingCount }}</span>
+            </button>
+            <button
+              class="filter-tab-pill"
+              [class.active]="activityFilterTab === 'overdue'"
+              (click)="activityFilterTab = 'overdue'"
+              [class.tab-danger]="overdueCount > 0"
+            >
+              Overdue <span class="tab-count">{{ overdueCount }}</span>
+            </button>
+            <button
+              class="filter-tab-pill"
+              [class.active]="activityFilterTab === 'completed'"
+              (click)="activityFilterTab = 'completed'"
+            >
+              Completed <span class="tab-count">{{ completedCount }}</span>
+            </button>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div class="filter-toolbar">
+            <label class="filter-select">
+              <ion-icon name="funnel-outline"></ion-icon>
+              <select [(ngModel)]="statusFilter" aria-label="Filter by status">
+                <option>All statuses</option>
+                <option *ngFor="let s of statuses">{{ s }}</option>
+              </select>
+            </label>
+
+            <label class="filter-select">
+              <ion-icon name="pricetag-outline"></ion-icon>
+              <select [(ngModel)]="categoryFilter" aria-label="Filter by category">
+                <option>All categories</option>
+                <option *ngFor="let c of categories">{{ c }}</option>
+              </select>
+            </label>
+
+            <label class="filter-select">
+              <ion-icon name="flag-outline"></ion-icon>
+              <select [(ngModel)]="priorityFilter" aria-label="Filter by priority">
+                <option>All priorities</option>
+                <option *ngFor="let p of priorities">{{ p }}</option>
+              </select>
+            </label>
+
+            <label class="filter-select">
+              <ion-icon name="swap-vertical-outline"></ion-icon>
+              <select [(ngModel)]="sortBy" aria-label="Sort activities">
+                <option value="date-asc">Date: Earliest first</option>
+                <option value="date-desc">Date: Latest first</option>
+                <option value="priority">Priority: Highest first</option>
+                <option value="title">Title: A to Z</option>
+              </select>
+            </label>
+
+            <button
+              *ngIf="statusFilter !== 'All statuses' || categoryFilter !== 'All categories' || priorityFilter !== 'All priorities' || searchQuery"
+              class="text-button filter-reset-btn"
+              (click)="statusFilter = 'All statuses'; categoryFilter = 'All categories'; priorityFilter = 'All priorities'; clearSearch()"
+            >
+              Reset filters
+            </button>
+
+            <span class="result-count">{{ visibleActivities.length }} activities</span>
+          </div>
+
+          <!-- 1. Table View -->
+          <div *ngIf="activitiesLayout === 'list'" class="panel full-list-panel">
+            <div class="list-head">
+              <span>ACTIVITY DETAILS</span>
+              <span>ASSIGNEE</span>
+              <span>DATE & DEADLINE</span>
+              <span>PRIORITY</span>
+              <span>STATUS</span>
+              <span>ACTIONS</span>
+            </div>
+
+            <div class="table-rows-container">
+              <article *ngFor="let item of visibleActivities" class="full-activity-row">
+                <div class="full-activity-main">
+                  <span class="category-icon" [class]="'cat-' + getCategoryColor(item.category)">
+                    <ion-icon [name]="item.category === 'Meeting' ? 'people-outline' : item.category === 'Design' ? 'color-palette-outline' : item.category === 'Development' ? 'code-slash-outline' : 'layers-outline'"></ion-icon>
+                  </span>
+                  <div class="full-activity-info">
+                    <button class="full-title" (click)="openEditActivity(item)">{{ item.title }}</button>
+                    <div class="full-meta">
+                      <span class="category-pill-xs" [class]="'cat-pill-' + getCategoryColor(item.category)">
+                        {{ item.category }}
+                      </span>
+                      <span class="full-desc">{{ item.description || 'No description provided.' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="assignee-cell">
+                  <span class="avatar avatar-small" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
+                  <span>{{ item.assignee }}</span>
+                </div>
+
+                <div class="schedule-cell">
+                  <strong>{{ shortDate(item.date) }} at {{ item.time }}</strong>
+                  <span [class.text-danger]="isOverdue(item)">{{ dueLabel(item.deadline) }}</span>
+                </div>
+
+                <div class="priority-cell">
+                  <span class="priority-badge" [class]="getPriorityBadgeClass(item.priority)">
+                    {{ item.priority || 'Normal' }}
+                  </span>
+                </div>
+
+                <div class="status-cell">
+                  <select
+                    [value]="item.status"
+                    [class]="'status-select status-' + item.status.toLowerCase()"
+                    (change)="updateStatus(item, $event)"
+                    [attr.aria-label]="'Status for ' + item.title"
+                  >
+                    <option *ngFor="let status of statuses">{{ status }}</option>
+                  </select>
+                </div>
+
+                <div class="activity-actions">
+                  <button class="row-icon-btn" aria-label="Edit activity" (click)="openEditActivity(item)" title="Edit">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </button>
+                  <button class="row-icon-btn delete-button" aria-label="Delete activity" (click)="confirmDelete(item)" title="Delete">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </article>
+            </div>
+
+            <div *ngIf="!visibleActivities.length" class="empty-state">
+              <span class="empty-icon"><ion-icon name="search-outline"></ion-icon></span>
+              <strong>No activities match your filters</strong>
+              <p>Try clearing filters or search query to see more activities.</p>
+              <button class="secondary-button" (click)="statusFilter = 'All statuses'; categoryFilter = 'All categories'; priorityFilter = 'All priorities'; activityFilterTab = 'all'; clearSearch()">
+                Clear all filters
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Kanban Board View -->
+          <div *ngIf="activitiesLayout === 'kanban'" class="kanban-board">
+            <div *ngFor="let status of statuses" class="kanban-column" [class]="'kanban-col-' + status.toLowerCase()">
+              <div class="kanban-col-header">
+                <div class="kanban-col-title">
+                  <span class="kanban-dot" [class]="'dot-' + status.toLowerCase()"></span>
+                  <h3>{{ status }}</h3>
+                </div>
+                <span class="kanban-count">{{ getKanbanActivities(status).length }}</span>
+              </div>
+
+              <div class="kanban-cards-list">
+                <article *ngFor="let item of getKanbanActivities(status)" class="kanban-card">
+                  <div class="kanban-card-top">
+                    <span class="category-pill-xs" [class]="'cat-pill-' + getCategoryColor(item.category)">
+                      {{ item.category }}
+                    </span>
+                    <span class="priority-badge" [class]="getPriorityBadgeClass(item.priority)">
+                      {{ item.priority || 'Normal' }}
+                    </span>
+                  </div>
+
+                  <button class="kanban-title" (click)="openEditActivity(item)">
+                    {{ item.title }}
+                  </button>
+
+                  <p *ngIf="item.description" class="kanban-desc">{{ item.description }}</p>
+
+                  <div class="kanban-card-bottom">
+                    <div class="kanban-assignee">
+                      <span class="avatar avatar-xs" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
+                      <small>{{ item.assignee }}</small>
+                    </div>
+                    <span class="kanban-deadline" [class.text-danger]="isOverdue(item)">
+                      <ion-icon name="time-outline"></ion-icon> {{ dueLabel(item.deadline) }}
+                    </span>
+                  </div>
+
+                  <div class="kanban-card-actions">
+                    <button class="kanban-advance-btn" (click)="advanceStatus(item)" title="Advance status">
+                      <ion-icon name="refresh-outline"></ion-icon> Move
+                    </button>
+                    <button class="row-icon-btn-xs" (click)="openEditActivity(item)" title="Edit">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </button>
+                    <button class="row-icon-btn-xs text-danger" (click)="confirmDelete(item)" title="Delete">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                  </div>
+                </article>
+
+                <div *ngIf="!getKanbanActivities(status).length" class="kanban-empty">
+                  <span>No {{ status.toLowerCase() }} tasks</span>
+                </div>
+              </div>
+
+              <button class="kanban-add-btn" (click)="openNewActivity()">
+                <ion-icon name="add-outline"></ion-icon> Add task
+              </button>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: CALENDAR                                              -->
+      <!-- ============================================================ -->
+      <ng-container *ngIf="activeView === 'Calendar'">
+        <section class="page-content inner-page">
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-dot"></span>ACTIVITY SCHEDULING</div>
+              <h1>Interactive Calendar</h1>
+              <p class="page-subtitle">Schedule, drag perspective, and view tasks across team time blocks.</p>
+            </div>
+            <div class="welcome-actions">
+              <button class="secondary-button" (click)="weekOffset = 0">
+                Current Week
+              </button>
+              <button class="primary-button" (click)="openNewActivity()">
+                <ion-icon name="add-outline"></ion-icon> Schedule Activity
+              </button>
+            </div>
+          </div>
+
+          <section class="panel full-calendar-panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">SCHEDULE TIMELINE</div>
+                <h2>{{ weekLabel }}</h2>
+              </div>
+              <div class="week-actions">
+                <button class="icon-button" aria-label="Previous week" (click)="changeWeek(-1)">
+                  <ion-icon name="chevron-back-outline"></ion-icon>
+                </button>
+                <button class="secondary-button btn-sm" (click)="weekOffset = 0">Today</button>
+                <button class="icon-button" aria-label="Next week" (click)="changeWeek(1)">
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="full-calendar-grid">
+              <section
+                *ngFor="let day of weekDays"
+                class="calendar-column"
+                [class.current-day-column]="day.key === todayKey"
+              >
+                <div class="calendar-day-heading">
+                  <div>
+                    <span class="day-label">{{ day.label }}</span>
+                    <span *ngIf="day.key === todayKey" class="today-tag">Today</span>
+                  </div>
+                  <strong class="day-number">{{ day.day }}</strong>
+                </div>
+
+                <div class="calendar-day-activities">
+                  <button
+                    *ngFor="let item of activitiesOnDate(day.key)"
+                    class="calendar-activity"
+                    [class]="'calendar-activity event-' + getCategoryColor(item.category)"
+                    (click)="openEditActivity(item)"
+                  >
+                    <div class="cal-act-header">
+                      <span class="cal-act-time">{{ item.time }}</span>
+                      <span class="status-badge-xs" [class]="'status-' + item.status.toLowerCase()">{{ item.status }}</span>
+                    </div>
+                    <strong class="cal-act-title">{{ item.title }}</strong>
+                    <div class="cal-act-footer">
+                      <span class="avatar avatar-xs" [class]="avatarColor(item.assignee)">{{ initials(item.assignee) }}</span>
+                      <small>{{ item.assignee }}</small>
+                    </div>
+                  </button>
+
+                  <div *ngIf="!activitiesOnDate(day.key).length" class="no-day-events">
+                    <span>Nothing scheduled</span>
+                  </div>
+
+                  <button class="cal-add-day-btn" (click)="quickAddOnDate(day.key)">
+                    <ion-icon name="add-outline"></ion-icon> Add on this day
+                  </button>
+                </div>
+              </section>
+            </div>
+          </section>
+        </section>
+      </ng-container>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: TEAM                                                  -->
+      <!-- ============================================================ -->
+      <ng-container *ngIf="activeView === 'Team'">
+        <section class="page-content inner-page">
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-dot"></span>USER MANAGEMENT</div>
+              <h1>Team & Access Control</h1>
+              <p class="page-subtitle">Manage accounts, assign administrative roles, and inspect workload.</p>
+            </div>
+            <div class="welcome-actions">
+              <button class="primary-button" (click)="openAddMemberModal()">
+                <ion-icon name="person-add-outline"></ion-icon> Add Team Member
+              </button>
+            </div>
+          </div>
+
+          <div class="team-overview-stats">
+            <article class="team-stat-card">
+              <span class="stat-icon icon-blue">
+                <ion-icon name="people-outline"></ion-icon>
+              </span>
+              <div>
+                <strong>{{ activeMembers }} / {{ members.length }}</strong>
+                <span>Active Workspace Members</span>
+              </div>
+            </article>
+
+            <article class="team-stat-card">
+              <span class="stat-icon icon-green">
+                <ion-icon name="checkmark-done-outline"></ion-icon>
+              </span>
+              <div>
+                <strong>{{ completedCount }}</strong>
+                <span>Completed Deliverables</span>
+              </div>
+            </article>
+
+            <article class="team-stat-card">
+              <span class="stat-icon icon-violet">
+                <ion-icon name="sync-outline"></ion-icon>
+              </span>
+              <div>
+                <strong>{{ inProgressCount }}</strong>
+                <span>Activities Underway</span>
+              </div>
+            </article>
+          </div>
+
+          <section class="panel team-panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">TEAM DIRECTORY</div>
+                <h2>Members & Permissions <span class="soft-count">{{ filteredMembers.length }}</span></h2>
+              </div>
+              <div class="team-filter-box">
+                <label class="search-box member-search-box">
+                  <ion-icon name="search-outline"></ion-icon>
+                  <input [(ngModel)]="memberSearchQuery" placeholder="Filter members..." aria-label="Search members" />
+                </label>
+              </div>
+            </div>
+
+            <div class="team-table-head">
+              <span>MEMBER</span>
+              <span>ROLE</span>
+              <span>ASSIGNED WORK</span>
+              <span>ACCOUNT STATUS</span>
+              <span>ACTIONS</span>
+            </div>
+
+            <div class="team-members-list">
+              <article *ngFor="let member of filteredMembers" class="team-member-row">
+                <div class="member-identity">
+                  <span class="avatar member-avatar" [class]="member.color">{{ member.initials }}</span>
+                  <div class="member-info">
+                    <strong>{{ member.name }}</strong>
+                    <small>{{ member.email }}</small>
+                  </div>
+                </div>
+
+                <div class="member-role-cell">
+                  <select
+                    [value]="member.role"
+                    (change)="changeRole(member, $event)"
+                    [disabled]="member.id === 1"
+                    class="role-select"
+                    [attr.aria-label]="'Role for ' + member.name"
+                  >
+                    <option>Admin</option>
+                    <option>Member</option>
+                  </select>
+                </div>
+
+                <div class="member-activity-count-cell">
+                  <span class="pill-badge">{{ activitiesForMember(member.name).length }} activities</span>
+                </div>
+
+                <div class="member-status-cell">
+                  <button
+                    class="member-state"
+                    [class.member-inactive]="!member.active"
+                    (click)="toggleMember(member)"
+                  >
+                    <span class="state-dot"></span>
+                    {{ member.active ? 'Active' : 'Inactive' }}
+                  </button>
+                </div>
+
+                <div class="member-actions-cell">
+                  <button
+                    *ngIf="member.id !== 1"
+                    class="row-icon-btn delete-button"
+                    (click)="deleteMember(member)"
+                    title="Remove member"
+                    aria-label="Remove member"
+                  >
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                  <span *ngIf="member.id === 1" class="primary-owner-badge">Owner</span>
+                </div>
+              </article>
+            </div>
+          </section>
+        </section>
+      </ng-container>
+
+      <!-- ============================================================ -->
+      <!-- VIEW: REPORTS & ANALYTICS                                   -->
+      <!-- ============================================================ -->
+      <ng-container *ngIf="activeView === 'Reports'">
+        <section class="page-content inner-page">
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-dot"></span>REPORTS & ANALYTICS</div>
+              <h1>Productivity Insights</h1>
+              <p class="page-subtitle">Track velocity, task distributions, and export comprehensive team data.</p>
+            </div>
+            <div class="welcome-actions">
+              <button class="secondary-button" (click)="printReport()">
+                <ion-icon name="print-outline"></ion-icon> Print Report
+              </button>
+              <button class="primary-button" (click)="downloadReport()">
+                <ion-icon name="download-outline"></ion-icon> Export CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-toolbar">
+            <label class="filter-select">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <select [(ngModel)]="reportPeriod" aria-label="Report date range">
+                <option *ngFor="let period of reportPeriods" [value]="period">{{ period }}</option>
+              </select>
+            </label>
+
+            <label class="filter-select">
+              <ion-icon name="funnel-outline"></ion-icon>
+              <select [(ngModel)]="reportStatusFilter" aria-label="Report status">
+                <option>All statuses</option>
+                <option *ngFor="let status of statuses">{{ status }}</option>
+              </select>
+            </label>
+
+            <label class="filter-select">
+              <ion-icon name="pricetag-outline"></ion-icon>
+              <select [(ngModel)]="reportCategoryFilter" aria-label="Report category">
+                <option>All categories</option>
+                <option *ngFor="let category of categories">{{ category }}</option>
+              </select>
+            </label>
+
+            <span class="result-count">{{ reportActivities.length }} activities included</span>
+          </div>
+
+          <!-- High-level Metric Cards -->
+          <div class="report-stats-grid">
+            <article class="report-card">
+              <div class="report-card-icon icon-blue">
+                <ion-icon name="layers-outline"></ion-icon>
+              </div>
+              <div class="report-card-body">
+                <span>Total Scope</span>
+                <strong>{{ reportActivities.length }}</strong>
+                <small>Across {{ reportCategoryCount }} work categories</small>
+              </div>
+            </article>
+
+            <article class="report-card">
+              <div class="report-card-icon icon-green">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+              <div class="report-card-body">
+                <span>Completed</span>
+                <strong>{{ reportCompletedCount }}</strong>
+                <small>{{ reportCompletionRate }}% completion efficiency</small>
+              </div>
+            </article>
+
+            <article class="report-card">
+              <div class="report-card-icon icon-violet">
+                <ion-icon name="sync-outline"></ion-icon>
+              </div>
+              <div class="report-card-body">
+                <span>In Progress</span>
+                <strong>{{ reportInProgressCount }}</strong>
+                <small>Active work in motion</small>
+              </div>
+            </article>
+
+            <article class="report-card">
+              <div class="report-card-icon icon-orange">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+              <div class="report-card-body">
+                <span>Overdue Target</span>
+                <strong>{{ reportOverdueCount }}</strong>
+                <small>Requiring immediate attention</small>
+              </div>
+            </article>
+          </div>
+
+          <div class="reports-grid">
+            <!-- Category Completion Panel -->
+            <section class="panel report-chart-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-kicker">CATEGORY BREAKDOWN</div>
+                  <h2>Work Distribution & Completion</h2>
+                </div>
+              </div>
+              <div class="report-breakdown">
+                <div *ngFor="let row of reportCompletionBars" class="report-breakdown-row">
+                  <div class="report-category-label">
+                    <span class="category-dot" [class]="'dot-' + getCategoryColor(row.label)"></span>
+                    <strong>{{ row.label }}</strong>
+                    <span class="row-total-tag">{{ row.total }} activities</span>
+                  </div>
+                  <div class="report-breakdown-track">
+                    <span [style.width.%]="row.percent" [class]="'bar-' + getCategoryColor(row.label)"></span>
+                  </div>
+                  <strong class="report-percent">{{ row.percent }}%</strong>
+                </div>
+                <div *ngIf="!reportCompletionBars.length" class="empty-note">
+                  No activities match the selected report filters.
+                </div>
+              </div>
+            </section>
+
+            <!-- Status Distribution Panel -->
+            <section class="panel status-report-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-kicker">PIPELINE HEALTH</div>
+                  <h2>Status Distribution</h2>
+                </div>
+              </div>
+              <div class="status-overview-list">
+                <div *ngFor="let status of statuses" class="status-overview-row">
+                  <span class="status-badge" [class]="'status-' + status.toLowerCase()">{{ status }}</span>
+                  <div class="status-overview-track">
+                    <span
+                      [style.width.%]="reportActivities.length ? (countReportStatus(status) / reportActivities.length * 100) : 0"
+                      [class]="'overview-' + status.toLowerCase()"
+                    ></span>
+                  </div>
+                  <strong>{{ countReportStatus(status) }}</strong>
+                </div>
+              </div>
+
+              <!-- Team Member Velocity Leaderboard -->
+              <div class="team-leaderboard-section">
+                <div class="leaderboard-heading">
+                  <ion-icon name="trophy-outline"></ion-icon>
+                  <strong>Team Velocity & Contributions</strong>
+                </div>
+                <div class="leaderboard-list">
+                  <div *ngFor="let item of reportMemberLeaderboard" class="leaderboard-row">
+                    <div class="leaderboard-member">
+                      <span class="avatar avatar-xs" [class]="item.member.color">{{ item.member.initials }}</span>
+                      <span>{{ item.member.name }}</span>
+                    </div>
+                    <div class="leaderboard-stats">
+                      <span>{{ item.completed }} done / {{ item.total }} tasks</span>
+                      <strong class="leaderboard-rate">{{ item.rate }}%</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </ng-container>
+    </main>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: ADD / EDIT ACTIVITY                                   -->
+  <!-- ============================================================ -->
+  <div *ngIf="showActivityModal" class="modal-backdrop" (click)="showActivityModal = false">
+    <section class="activity-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" (click)="$event.stopPropagation()">
+      <div class="modal-heading">
+        <div>
+          <div class="panel-kicker">{{ editingId !== null ? 'UPDATE ITEM' : 'NEW DELIVERABLE' }}</div>
+          <h2 id="modal-title">{{ editingId !== null ? 'Edit Activity' : 'Create New Activity' }}</h2>
+        </div>
+        <button class="icon-button small-icon" aria-label="Close modal" (click)="showActivityModal = false">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveActivity()">
+        <label class="form-field form-full">
+          <span>Activity Title <i>*</i></span>
+          <input
+            name="title"
+            [(ngModel)]="activityForm.title"
+            placeholder="e.g. Conduct user experience audit"
+            required
+            maxlength="90"
+            autofocus
+          />
+        </label>
+
+        <label class="form-field form-full">
+          <span>Description & Notes</span>
+          <textarea
+            name="description"
+            [(ngModel)]="activityForm.description"
+            placeholder="What are the main objectives, links, or notes for this activity?"
+            rows="3"
+            maxlength="300"
+          ></textarea>
+        </label>
+
+        <!-- Quick Date Preset Buttons -->
+        <div class="date-presets-row form-full">
+          <span>Quick schedule:</span>
+          <button type="button" class="preset-pill" (click)="setDatePreset('today')">Today</button>
+          <button type="button" class="preset-pill" (click)="setDatePreset('tomorrow')">Tomorrow</button>
+          <button type="button" class="preset-pill" (click)="setDatePreset('nextWeek')">Next Week</button>
+        </div>
+
+        <label class="form-field">
+          <span>Scheduled Date</span>
+          <input type="date" name="date" [(ngModel)]="activityForm.date" required />
+        </label>
+
+        <label class="form-field">
+          <span>Time Block</span>
+          <input type="time" name="time" [(ngModel)]="activityForm.time" required />
+        </label>
+
+        <label class="form-field">
+          <span>Target Deadline</span>
+          <input type="date" name="deadline" [(ngModel)]="activityForm.deadline" required />
+        </label>
+
+        <label class="form-field">
+          <span>Category</span>
+          <select name="category" [(ngModel)]="activityForm.category">
+            <option *ngFor="let category of categories">{{ category }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Priority Level</span>
+          <select name="priority" [(ngModel)]="activityForm.priority">
+            <option *ngFor="let p of priorities">{{ p }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Assignee</span>
+          <select name="assignee" [(ngModel)]="activityForm.assignee">
+            <option *ngFor="let member of activeMembersList" [value]="member.name">
+              {{ member.name }} ({{ member.role }})
+            </option>
+          </select>
+        </label>
+
+        <label class="form-field form-full">
+          <span>Current Status</span>
+          <select name="status" [(ngModel)]="activityForm.status">
+            <option *ngFor="let status of statuses">{{ status }}</option>
+          </select>
+        </label>
+
+        <label class="reminder-toggle form-full">
+          <input type="checkbox" name="reminder" [(ngModel)]="activityForm.reminder" />
+          <span class="fake-toggle"></span>
+          <span class="reminder-copy">
+            <strong>Send gentle reminder alerts</strong>
+            <small>Show alerts in the workspace notification center before deadline.</small>
+          </span>
+        </label>
+
+        <div class="modal-actions form-full">
+          <button type="button" class="secondary-button" (click)="showActivityModal = false">
+            Cancel
+          </button>
+          <button type="submit" class="primary-button" [disabled]="!activityForm.title.trim()">
+            <ion-icon [name]="editingId !== null ? 'checkmark-outline' : 'add-outline'"></ion-icon>
+            {{ editingId !== null ? 'Save Changes' : 'Create Activity' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: ADD TEAM MEMBER                                       -->
+  <!-- ============================================================ -->
+  <div *ngIf="showMemberModal" class="modal-backdrop" (click)="showMemberModal = false">
+    <section class="activity-modal" role="dialog" aria-modal="true" aria-labelledby="member-modal-title" (click)="$event.stopPropagation()">
+      <div class="modal-heading">
+        <div>
+          <div class="panel-kicker">TEAM EXPANSION</div>
+          <h2 id="member-modal-title">Add Team Member</h2>
+        </div>
+        <button class="icon-button small-icon" aria-label="Close" (click)="showMemberModal = false">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveMember()">
+        <label class="form-field form-full">
+          <span>Full Name <i>*</i></span>
+          <input
+            name="name"
+            [(ngModel)]="memberForm.name"
+            placeholder="e.g. Maya Lin"
+            required
+            maxlength="60"
+            autofocus
+          />
+        </label>
+
+        <label class="form-field form-full">
+          <span>Work Email Address <i>*</i></span>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="memberForm.email"
+            placeholder="e.g. maya.lin@company.com"
+            required
+            maxlength="80"
+          />
+        </label>
+
+        <label class="form-field">
+          <span>Workspace Role</span>
+          <select name="role" [(ngModel)]="memberForm.role">
+            <option value="Member">Member (standard access)</option>
+            <option value="Admin">Admin (full management)</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Avatar Theme Color</span>
+          <select name="color" [(ngModel)]="memberForm.color">
+            <option *ngFor="let c of memberColors" [value]="c">{{ c | titlecase }}</option>
+          </select>
+        </label>
+
+        <div class="modal-actions form-full">
+          <button type="button" class="secondary-button" (click)="showMemberModal = false">
+            Cancel
+          </button>
+          <button type="submit" class="primary-button" [disabled]="!memberForm.name.trim() || !memberForm.email.trim()">
+            <ion-icon name="person-add-outline"></ion-icon> Add Teammate
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: DELETE CONFIRMATION                                   -->
+  <!-- ============================================================ -->
+  <div *ngIf="showDeleteConfirm" class="modal-backdrop" (click)="cancelDelete()">
+    <section class="confirm-dialog" role="alertdialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="confirm-icon danger-icon">
+        <ion-icon name="trash-outline"></ion-icon>
+      </div>
+      <h3>Delete Activity?</h3>
+      <p>
+        Are you sure you want to delete <strong>"{{ activityToDelete?.title }}"</strong>?
+        You can undo this immediately from the notification banner.
+      </p>
+      <div class="confirm-actions">
+        <button type="button" class="secondary-button" (click)="cancelDelete()">
+          Keep Activity
+        </button>
+        <button type="button" class="danger-button" (click)="executeDelete()">
+          Delete Permanently
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TOAST NOTIFICATION & UNDO BANNER                             -->
+  <!-- ============================================================ -->
+  <div *ngIf="toastMessage" class="toast-message" role="status">
+    <span class="toast-icon">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+    </span>
+    <span class="toast-text">{{ toastMessage }}</span>
+    <button *ngIf="toastUndoable" class="toast-undo-btn" (click)="undoDelete()">
+      Undo
+    </button>
+  </div>
+</ion-content>

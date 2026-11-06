@@ -1,0 +1,446 @@
+:host {
+  display: block;
+  min-height: 100%;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+}
+
+.login-content {
+  --background: #5142bd;
+}
+
+.login-screen {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  place-items: center;
+  padding: max(28px, env(safe-area-inset-top)) 24px max(28px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(ellipse at 50% 23%, rgba(196, 177, 255, 0.52), transparent 39%),
+    radial-gradient(ellipse at 100% 88%, rgba(169, 148, 229, 0.3), transparent 34%),
+    linear-gradient(155deg, #7160d1 0%, #4c3bb4 55%, #39308f 100%);
+  color: #fff;
+}
+
+.login-screen.auth-mode {
+  min-height: 100vh;
+  min-height: 100dvh;
+  grid-template-rows: minmax(205px, 38dvh) minmax(355px, 1fr);
+  place-items: stretch;
+  padding: max(22px, env(safe-area-inset-top)) 0 0;
+  background: linear-gradient(150deg, #5847bd 0%, #4938aa 58%, #35277e 100%);
+  color: #191824;
+}
+
+.sign-in-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px clamp(16px, 6vw, 36px) 28px;
+  color: #fff;
+}
+
+.mini-brand {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.mini-brand-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 21px;
+}
+
+.sign-in-hero h1 {
+  margin: 24px 0 0;
+  color: #fff;
+  font-size: clamp(25px, 7vw, 34px);
+  font-weight: 760;
+  line-height: 1.05;
+}
+
+.sign-in-panel {
+  z-index: 1;
+  overflow: auto;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 18px max(24px, env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -7px 24px rgba(27, 21, 76, 0.1);
+}
+
+.sign-in-form-wrap {
+  width: min(100%, 440px);
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0 0 5px;
+  color: #6552e8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sign-in-panel h2 {
+  margin: 0;
+  color: #17171e;
+  font-size: 27px;
+  font-weight: 750;
+  line-height: 1.15;
+}
+
+.form-intro {
+  margin: 6px 0 18px;
+  color: #77738b;
+  font-size: 13px;
+}
+
+.credentials-form {
+  display: grid;
+  gap: 8px;
+}
+
+.credentials-form label {
+  margin-top: 1px;
+  color: #625f74;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.input-shell {
+  display: flex;
+  min-width: 0;
+  height: 44px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #e6e3f2;
+  border-radius: 9px;
+  padding: 0 11px;
+  color: #89849f;
+}
+
+.input-shell:focus-within {
+  border-color: #7866ec;
+  box-shadow: 0 0 0 2px rgba(120, 102, 236, 0.12);
+}
+
+.input-shell > ion-icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+
+.input-shell input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #262431;
+  font-size: 12px;
+}
+
+.password-toggle {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #77738b;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.submit-button {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 5px;
+  border: 0;
+  border-radius: 9px;
+  background: linear-gradient(100deg, #725dec, #4d3bc7);
+  box-shadow: 0 4px 10px rgba(83, 64, 198, 0.24);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.submit-button ion-icon { font-size: 16px; }
+.submit-button:focus-visible, .password-toggle:focus-visible, .demo-account:focus-visible {
+  outline: 2px solid #5847bd;
+  outline-offset: 2px;
+}
+
+.demo-accounts { margin-top: 18px; }
+
+.demo-accounts > p {
+  margin: 0 0 9px;
+  color: #6f6b80;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.demo-account {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e8e5f3;
+  border-radius: 9px;
+  padding: 6px 9px;
+  background: #fff;
+  color: #282636;
+  cursor: pointer;
+  text-align: left;
+}
+
+.demo-account + .demo-account { margin-top: 7px; }
+.demo-account > ion-icon { margin-left: auto; color: #77738b; font-size: 16px; }
+
+.avatar {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.avatar-admin { background: #e8e7ff; color: #5d50d7; }
+.avatar-member { background: #ffeadf; color: #c76c44; }
+
+.demo-copy { display: grid; min-width: 0; gap: 2px; }
+.demo-copy strong { font-size: 11px; font-weight: 700; }
+.demo-copy small { overflow: hidden; color: #77738b; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (min-width: 760px) {
+  .login-screen.auth-mode {
+    grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+    grid-template-rows: minmax(0, 1fr);
+    padding: max(28px, env(safe-area-inset-top)) clamp(24px, 5vw, 72px) max(28px, env(safe-area-inset-bottom));
+  }
+
+  .sign-in-hero { padding: 36px clamp(24px, 6vw, 90px); }
+  .sign-in-hero h1 { font-size: clamp(36px, 4vw, 56px); }
+
+  .sign-in-panel {
+    display: grid;
+    align-items: center;
+    border-radius: 16px;
+    padding: 36px clamp(24px, 4vw, 56px);
+  }
+}
+
+@media (max-height: 620px) and (max-width: 759px) {
+  .login-screen.auth-mode { grid-template-rows: minmax(160px, 34dvh) minmax(355px, 1fr); }
+  .sign-in-hero { padding-top: 10px; padding-bottom: 20px; }
+  .sign-in-hero h1 { margin-top: 12px; font-size: 21px; }
+  .sign-in-panel { padding-top: 14px; }
+  .form-intro { margin-bottom: 12px; }
+  .demo-accounts { margin-top: 12px; }
+}
+
+.welcome {
+  display: flex;
+  width: min(100%, 340px);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: welcome-in 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.clock-art {
+  position: relative;
+  display: grid;
+  width: clamp(132px, 30vw, 156px);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-bottom: 11px;
+  animation: clock-float 4s ease-in-out infinite;
+}
+
+.clock-orbit {
+  position: absolute;
+  inset: 5%;
+  border: 1px solid rgba(210, 199, 255, 0.14);
+  border-radius: 50%;
+}
+
+.clock-orbit-inner {
+  inset: 13%;
+  border-color: rgba(224, 215, 255, 0.22);
+}
+
+.clock-crown {
+  position: absolute;
+  z-index: 1;
+  top: 14%;
+  width: 10%;
+  height: 9%;
+  border-radius: 5px 5px 2px 2px;
+  background: #f9f7ff;
+  box-shadow: 0 2px 5px rgba(32, 21, 100, 0.24);
+}
+
+.clock-face {
+  position: relative;
+  display: block;
+  width: 66%;
+  aspect-ratio: 1;
+  border: 4px solid rgba(207, 195, 255, 0.9);
+  border-radius: 50%;
+  background: #f7f5ff;
+  box-shadow: 0 0 0 5px rgba(235, 230, 255, 0.12), 0 9px 22px rgba(28, 17, 91, 0.24);
+}
+
+.clock-tick {
+  position: absolute;
+  width: 2px;
+  height: 7px;
+  border-radius: 2px;
+  background: #8374d9;
+}
+
+.tick-top { top: 8%; left: calc(50% - 1px); }
+.tick-right { top: calc(50% - 3.5px); right: 8%; transform: rotate(90deg); }
+.tick-bottom { bottom: 8%; left: calc(50% - 1px); }
+.tick-left { top: calc(50% - 3.5px); left: 8%; transform: rotate(90deg); }
+
+.clock-hand {
+  position: absolute;
+  z-index: 1;
+  bottom: 50%;
+  left: calc(50% - 1.5px);
+  width: 3px;
+  border-radius: 4px;
+  background: #41359e;
+  transform-origin: 50% 100%;
+}
+
+.clock-hand-hour {
+  height: 25%;
+  transform: rotate(35deg);
+}
+
+.clock-hand-minute {
+  height: 36%;
+  animation: clock-tick 12s steps(12, end) infinite;
+}
+
+.clock-pin {
+  position: absolute;
+  z-index: 2;
+  top: calc(50% - 4px);
+  left: calc(50% - 4px);
+  width: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #4939aa;
+  box-shadow: 0 1px 3px rgba(31, 21, 97, 0.35);
+}
+
+.brand-name {
+  margin: 0;
+  color: #090715;
+  font-size: clamp(38px, 10vw, 46px);
+  font-weight: 800;
+  line-height: 1.02;
+}
+
+.tagline {
+  margin: 7px 0 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.28;
+}
+
+.login-actions {
+  display: grid;
+  width: min(100%, 292px);
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.action-button {
+  min-height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: 12px;
+  padding: 0 18px;
+  font: 700 13px 'Trebuchet MS', 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.action-button:hover { transform: translateY(-2px); }
+.action-button:active { transform: translateY(0); }
+.action-button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+.action-primary {
+  background: #fff;
+  color: #4938b2;
+  box-shadow: 0 5px 14px rgba(36, 24, 106, 0.15);
+}
+
+.action-primary:hover { background: #f4f1ff; }
+
+.action-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+}
+
+.action-secondary:hover { background: rgba(255, 255, 255, 0.13); }
+
+@keyframes clock-tick {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes clock-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes welcome-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-height: 620px) {
+  .login-screen { padding-top: 20px; padding-bottom: 20px; }
+  .clock-art { width: clamp(100px, 23vh, 132px); margin-bottom: 5px; }
+  .brand-name { font-size: clamp(34px, 8vh, 42px); }
+  .tagline { margin-top: 4px; font-size: 13px; }
+  .login-actions { gap: 8px; margin-top: 17px; }
+  .action-button { min-height: 43px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

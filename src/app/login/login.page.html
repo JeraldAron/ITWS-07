@@ -1,0 +1,87 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <main class="login-screen" [class.auth-mode]="showLoginForm">
+    <section class="welcome" *ngIf="!showLoginForm" aria-labelledby="brand-name">
+      <div class="clock-art" role="img" aria-label="Animated clock">
+        <span class="clock-orbit clock-orbit-outer"></span>
+        <span class="clock-orbit clock-orbit-inner"></span>
+        <span class="clock-crown"></span>
+        <span class="clock-face">
+          <span class="clock-tick tick-top"></span>
+          <span class="clock-tick tick-right"></span>
+          <span class="clock-tick tick-bottom"></span>
+          <span class="clock-tick tick-left"></span>
+          <span class="clock-hand clock-hand-hour"></span>
+          <span class="clock-hand clock-hand-minute"></span>
+          <span class="clock-pin"></span>
+        </span>
+      </div>
+
+      <h1 id="brand-name" class="brand-name">dayflow</h1>
+      <p class="tagline">Plan the day without<br />the noise.</p>
+
+      <div class="login-actions" aria-label="Continue to Dayflow">
+        <button class="action-button action-primary" type="button" (click)="openSignIn()">
+          Sign in
+        </button>
+        <button class="action-button action-secondary" type="button" (click)="continueToApp()">
+          Sign up
+        </button>
+      </div>
+    </section>
+
+    <section class="sign-in-hero" *ngIf="showLoginForm" aria-labelledby="sign-in-title">
+      <div class="mini-brand" aria-label="Dayflow">
+        <span class="mini-brand-mark" aria-hidden="true"><ion-icon name="time-outline"></ion-icon></span>
+        <span>day flow</span>
+      </div>
+      <h1 id="sign-in-title">Plan the day without<br />the noise.</h1>
+    </section>
+
+    <section class="sign-in-panel" *ngIf="showLoginForm" aria-labelledby="welcome-title">
+      <div class="sign-in-form-wrap">
+        <p class="eyebrow">Workspace sign in</p>
+        <h2 id="welcome-title">Welcome back</h2>
+        <p class="form-intro">Enter your account to open dayflow.</p>
+
+        <form class="credentials-form" (ngSubmit)="continueToApp()">
+          <label for="email">Email</label>
+          <div class="input-shell">
+            <ion-icon name="mail-outline" aria-hidden="true"></ion-icon>
+            <input #emailInput id="email" name="email" type="email" autocomplete="username"
+              [value]="email" (input)="email = emailInput.value" required />
+          </div>
+
+          <label for="password">Password</label>
+          <div class="input-shell">
+            <ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
+            <input #passwordInput id="password" name="password" [type]="showPassword ? 'text' : 'password'"
+              autocomplete="current-password" [value]="password" (input)="password = passwordInput.value" required />
+            <button class="password-toggle" type="button" (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              [attr.aria-pressed]="showPassword">
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+
+          <button class="submit-button" type="submit">
+            Sign in <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </form>
+
+        <div class="demo-accounts">
+          <p>Or continue with a demo account</p>
+          <button class="demo-account" type="button" (click)="signInAsDemo('alex')">
+            <span class="avatar avatar-admin">AM</span>
+            <span class="demo-copy"><strong>Alex Morgan</strong><small>Admin · alex.morgan&#64;company.com</small></span>
+            <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+          </button>
+          <button class="demo-account" type="button" (click)="signInAsDemo('jordan')">
+            <span class="avatar avatar-member">JL</span>
+            <span class="demo-copy"><strong>Jordan Lee</strong><small>Member · jordan.lee&#64;company.com</small></span>
+            <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</ion-content>
