@@ -338,6 +338,12 @@ h1 {
 }
 
 @media (max-width: 560px) {
+  .main-area {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
   .topbar-left {
     display: flex;
     flex: 1 1 auto;
@@ -423,7 +429,9 @@ h1 {
   }
 
   .page-content {
-    padding: 24px 16px max(24px, env(safe-area-inset-bottom));
+    width: 100%;
+    margin: 0;
+    padding: 20px 16px max(24px, env(safe-area-inset-bottom));
   }
 
   .welcome-row {
