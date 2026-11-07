@@ -715,47 +715,56 @@
 
           <!-- Filter Toolbar -->
           <div class="filter-toolbar">
-            <label class="filter-select">
-              <ion-icon name="funnel-outline"></ion-icon>
-              <select [(ngModel)]="statusFilter" aria-label="Filter by status">
-                <option>All statuses</option>
-                <option *ngFor="let s of statuses">{{ s }}</option>
-              </select>
-            </label>
+            <details class="filter-options">
+              <summary class="filter-trigger">
+                <ion-icon name="funnel-outline" aria-hidden="true"></ion-icon>
+                <span>Filters &amp; sort</span>
+                <ion-icon class="filter-trigger-chevron" name="chevron-down-outline" aria-hidden="true"></ion-icon>
+              </summary>
+              <div class="filter-options-panel">
+                <label class="filter-select">
+                  <ion-icon name="funnel-outline"></ion-icon>
+                  <select [(ngModel)]="statusFilter" aria-label="Filter by status">
+                    <option>All statuses</option>
+                    <option *ngFor="let s of statuses">{{ s }}</option>
+                  </select>
+                </label>
 
-            <label class="filter-select">
-              <ion-icon name="pricetag-outline"></ion-icon>
-              <select [(ngModel)]="categoryFilter" aria-label="Filter by category">
-                <option>All categories</option>
-                <option *ngFor="let c of categories">{{ c }}</option>
-              </select>
-            </label>
+                <label class="filter-select">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                  <select [(ngModel)]="categoryFilter" aria-label="Filter by category">
+                    <option>All categories</option>
+                    <option *ngFor="let c of categories">{{ c }}</option>
+                  </select>
+                </label>
 
-            <label class="filter-select">
-              <ion-icon name="flag-outline"></ion-icon>
-              <select [(ngModel)]="priorityFilter" aria-label="Filter by priority">
-                <option>All priorities</option>
-                <option *ngFor="let p of priorities">{{ p }}</option>
-              </select>
-            </label>
+                <label class="filter-select">
+                  <ion-icon name="flag-outline"></ion-icon>
+                  <select [(ngModel)]="priorityFilter" aria-label="Filter by priority">
+                    <option>All priorities</option>
+                    <option *ngFor="let p of priorities">{{ p }}</option>
+                  </select>
+                </label>
 
-            <label class="filter-select">
-              <ion-icon name="swap-vertical-outline"></ion-icon>
-              <select [(ngModel)]="sortBy" aria-label="Sort activities">
-                <option value="date-asc">Date: Earliest first</option>
-                <option value="date-desc">Date: Latest first</option>
-                <option value="priority">Priority: Highest first</option>
-                <option value="title">Title: A to Z</option>
-              </select>
-            </label>
+                <label class="filter-select">
+                  <ion-icon name="swap-vertical-outline"></ion-icon>
+                  <select [(ngModel)]="sortBy" aria-label="Sort activities">
+                    <option value="date-asc">Date: Earliest first</option>
+                    <option value="date-desc">Date: Latest first</option>
+                    <option value="priority">Priority: Highest first</option>
+                    <option value="title">Title: A to Z</option>
+                  </select>
+                </label>
 
-            <button
-              *ngIf="statusFilter !== 'All statuses' || categoryFilter !== 'All categories' || priorityFilter !== 'All priorities' || searchQuery"
-              class="text-button filter-reset-btn"
-              (click)="statusFilter = 'All statuses'; categoryFilter = 'All categories'; priorityFilter = 'All priorities'; clearSearch()"
-            >
-              Reset filters
-            </button>
+                <button
+                  *ngIf="statusFilter !== 'All statuses' || categoryFilter !== 'All categories' || priorityFilter !== 'All priorities' || searchQuery"
+                  class="text-button filter-reset-btn"
+                  (click)="statusFilter = 'All statuses'; categoryFilter = 'All categories'; priorityFilter = 'All priorities'; clearSearch()"
+                >
+                  Reset filters
+                </button>
+              </div>
+            </details>
 
             <span class="result-count">{{ visibleActivities.length }} activities</span>
           </div>

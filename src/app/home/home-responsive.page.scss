@@ -346,7 +346,9 @@ h1 {
   }
 
   .hamburger-btn {
-    flex: 0 0 34px;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
   }
 
   .topbar {
@@ -358,7 +360,24 @@ h1 {
   .topbar-left,
   .topbar-actions {
     min-width: 0;
-    gap: 7px;
+    gap: 6px;
+  }
+
+  .topbar .icon-button {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .topbar .icon-button ion-icon {
+    display: block;
+    flex: 0 0 auto;
+    font-size: 19px;
+    line-height: 1;
   }
 
   .breadcrumb {
@@ -372,8 +391,9 @@ h1 {
   }
 
   .search-box {
-    width: 34px;
+    width: 36px;
     height: 36px;
+    flex: 0 0 36px;
     justify-content: center;
     padding: 0;
   }
@@ -388,9 +408,9 @@ h1 {
   }
 
   .topbar-add-btn {
-    width: 36px;
-    min-width: 36px;
-    min-height: 36px;
+    width: 38px;
+    min-width: 38px;
+    min-height: 38px;
     padding: 0;
   }
 
@@ -472,8 +492,28 @@ h1 {
   }
 
   .feature-top-meta {
+    display: flex;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 6px 10px;
+  }
+
+  .feature-tag {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+  }
+
+  .feature-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 2px 7px;
+    background: #f3f1fa;
+    color: #777487;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    white-space: nowrap;
   }
 
   .feature-card {
@@ -552,5 +592,603 @@ h1 {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+:host {
+  --font: var(--ion-font-family);
+  font-size: var(--app-text-base);
+  line-height: 1.5;
+}
+
+.app-shell {
+  font-family: var(--ion-font-family);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  letter-spacing: -0.035em;
+}
+
+.workspace-copy strong,
+.profile-copy strong,
+.popover-heading strong {
+  font-size: 0.875rem;
+}
+
+.workspace-copy small,
+.profile-copy small,
+.side-upgrade p,
+.side-upgrade button,
+.side-stats-card p,
+.sidebar-caption,
+.panel-kicker,
+.eyebrow,
+.stat-trend,
+.stat-chip,
+.stat-bottom,
+.section-hint,
+.feature-tag,
+.feature-badge,
+.activity-time,
+.activity-meta,
+.week-caption,
+.weekday-name,
+.day-event,
+.more-events,
+.breadcrumb,
+.notification-item small {
+  font-size: var(--app-text-xs);
+  line-height: 1.45;
+}
+
+.nav-link {
+  font-size: var(--app-text-sm);
+}
+
+.search-box input,
+.activity-title,
+.stat-label,
+.notification-item strong {
+  font-size: 0.875rem;
+}
+
+.search-box kbd {
+  font-size: 0.6875rem;
+}
+
+.page-content h1 {
+  font-size: var(--app-heading);
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.page-subtitle,
+.feature-copy p,
+.today-footer,
+.empty-state p {
+  font-size: var(--app-text-sm);
+  line-height: 1.6;
+}
+
+.primary-button,
+.secondary-button,
+.text-button {
+  font-size: 0.8125rem;
+}
+
+.stat-value {
+  font-size: clamp(1.75rem, 1.5rem + 0.9vw, 2.125rem);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.feature-copy h3,
+.section-title-row h2,
+.panel-header h2 {
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+@media (max-width: 560px) {
+  .page-content h1 {
+    font-size: clamp(1.625rem, 7vw, 1.875rem);
+  }
+
+  .page-subtitle,
+  .feature-copy p,
+  .today-footer,
+  .empty-state p {
+    font-size: 0.875rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.75rem;
+  }
+}
+
+.inner-page {
+  font-family: var(--ion-font-family);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.inner-page .filter-tab-pill,
+.inner-page .filter-select select,
+.inner-page .view-mode-toggle,
+.inner-page .result-count,
+.inner-page .list-head,
+.inner-page .schedule-cell,
+.inner-page .status-select,
+.inner-page .kanban-col-header,
+.inner-page .kanban-card-actions,
+.inner-page .calendar-day-heading,
+.inner-page .cal-act-time,
+.inner-page .no-day-events,
+.inner-page .cal-add-day-btn,
+.inner-page .report-card-body span,
+.inner-page .report-card-body small,
+.inner-page .report-category-label,
+.inner-page .report-percent,
+.inner-page .status-overview-row {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.inner-page .filter-tab-pill,
+.inner-page .filter-select select,
+.inner-page .status-select,
+.inner-page .toggle-btn {
+  font-family: var(--ion-font-family);
+}
+
+.inner-page .filter-select select {
+  font-size: 0.8125rem;
+}
+
+.inner-page .filter-tab-pill {
+  min-height: 38px;
+}
+
+.inner-page .filter-options,
+.inner-page .filter-options-panel {
+  display: contents;
+}
+
+.inner-page .filter-trigger {
+  display: none;
+}
+
+.inner-page .list-head,
+.inner-page .panel-kicker,
+.inner-page .eyebrow {
+  letter-spacing: 0.09em;
+}
+
+.inner-page .full-title,
+.inner-page .kanban-title,
+.inner-page .cal-act-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.inner-page .full-desc,
+.inner-page .schedule-cell > span,
+.inner-page .kanban-desc,
+.inner-page .kanban-deadline,
+.inner-page .report-breakdown,
+.inner-page .empty-state p {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.inner-page .category-pill-xs,
+.inner-page .priority-badge,
+.inner-page .status-badge,
+.inner-page .status-badge-xs,
+.inner-page .today-tag,
+.inner-page .kanban-count,
+.inner-page .row-total-tag {
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.inner-page .report-card-body strong,
+.inner-page .day-number {
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.inner-page .report-card-body {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  gap: 3px;
+}
+
+.inner-page .report-card-body > span,
+.inner-page .report-card-body > strong,
+.inner-page .report-card-body > small {
+  display: block;
+  min-width: 0;
+}
+
+.inner-page .report-card-body > small {
+  line-height: 1.45;
+}
+
+.inner-page .report-breakdown-row,
+.inner-page .calendar-activity,
+.inner-page .kanban-card,
+.inner-page .full-activity-row {
+  line-height: 1.5;
+}
+
+.inner-page .report-breakdown-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(56px, 1.35fr) 2.5rem;
+  align-items: center;
+  gap: 10px;
+}
+
+.inner-page .report-category-label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 7px;
+  color: #565568;
+  font-size: 0.8125rem;
+}
+
+.inner-page .report-category-label strong {
+  font-weight: 600;
+}
+
+.inner-page .row-total-tag {
+  color: #777689;
+  font-size: 0.75rem;
+}
+
+.inner-page .report-percent {
+  color: #565568;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.inner-page .status-overview-row {
+  display: grid;
+  grid-template-columns: minmax(70px, auto) minmax(40px, 1fr) 1.5rem;
+  align-items: center;
+  gap: 9px;
+  color: #565568;
+  font-size: 0.8125rem;
+}
+
+.inner-page .status-overview-row > strong {
+  color: #565568;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.inner-page .status-overview-row .status-badge {
+  justify-self: start;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.inner-page .calendar-column,
+.inner-page .report-card,
+.inner-page .kanban-column {
+  min-width: 0;
+}
+
+@media (max-width: 560px) {
+  .inner-page .filter-tabs-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .inner-page .filter-tab-pill {
+    min-height: 38px;
+    flex: 1 1 auto;
+    justify-content: center;
+    padding-inline: 10px;
+    white-space: nowrap;
+  }
+
+  .inner-page .filter-toolbar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .inner-page .filter-options {
+    position: relative;
+    z-index: 2;
+    display: block;
+    grid-column: 1 / -1;
+  }
+
+  .inner-page .filter-trigger {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid #e6e3f0;
+    border-radius: 9px;
+    padding: 0 12px;
+    background: #fff;
+    color: #4a485b;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    list-style: none;
+  }
+
+  .inner-page .filter-trigger::-webkit-details-marker {
+    display: none;
+  }
+
+  .inner-page .filter-trigger > ion-icon:first-child {
+    color: #7866d5;
+    font-size: 18px;
+  }
+
+  .inner-page .filter-trigger-chevron {
+    margin-left: auto;
+    color: #858396;
+    font-size: 16px;
+    transition: transform 160ms ease;
+  }
+
+  .inner-page .filter-options[open] .filter-trigger-chevron {
+    transform: rotate(180deg);
+  }
+
+  .inner-page .filter-options-panel {
+    display: none;
+  }
+
+  .inner-page .filter-options[open] .filter-options-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    border: 1px solid #e9e7f0;
+    border-radius: 11px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(37, 32, 63, 0.14);
+  }
+
+  .inner-page .filter-select {
+    display: flex;
+    min-width: 0;
+    min-height: 42px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 9px;
+  }
+
+  .inner-page .filter-select ion-icon {
+    flex: 0 0 auto;
+  }
+
+  .inner-page .filter-select select {
+    width: 100%;
+    min-width: 0;
+    font-size: 0.8125rem;
+  }
+
+  .inner-page .result-count {
+    grid-column: 1 / -1;
+    align-self: center;
+    padding: 2px 0;
+    text-align: left;
+  }
+
+  .inner-page .filter-reset-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .inner-page .full-list-panel {
+    overflow: visible;
+    padding: 12px;
+  }
+
+  .inner-page .full-list-panel > .list-head {
+    display: none;
+  }
+
+  .inner-page .table-rows-container {
+    display: grid;
+    gap: 10px;
+  }
+
+  .inner-page .full-activity-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px 12px;
+    min-width: 0;
+    border: 1px solid #ecebf2;
+    border-radius: 10px;
+    padding: 13px;
+    background: #fff;
+  }
+
+  .inner-page .full-activity-main {
+    grid-column: 1 / -1;
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .inner-page .category-icon {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+  }
+
+  .inner-page .full-activity-info {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .inner-page .full-title {
+    display: block;
+    max-width: 100%;
+    padding: 0;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .inner-page .full-meta {
+    display: grid;
+    justify-items: start;
+    gap: 5px;
+    margin-top: 5px;
+  }
+
+  .inner-page .full-desc {
+    display: block;
+    color: #656477;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .inner-page .schedule-cell {
+    display: grid;
+    align-content: start;
+    gap: 3px;
+    min-width: 0;
+    color: #666578;
+    font-size: 0.8125rem;
+  }
+
+  .inner-page .schedule-cell strong {
+    color: #363544;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .inner-page .priority-cell,
+  .inner-page .status-cell {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .inner-page .priority-cell::before,
+  .inner-page .status-cell::before {
+    color: #858497;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .inner-page .priority-cell::before {
+    content: 'Priority';
+  }
+
+  .inner-page .status-cell::before {
+    content: 'Status';
+  }
+
+  .inner-page .priority-badge,
+  .inner-page .status-select {
+    max-width: 100%;
+    font-size: 0.75rem;
+  }
+
+  .inner-page .status-select {
+    min-height: 34px;
+    padding-inline: 6px;
+  }
+
+  .inner-page .activity-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    gap: 6px;
+    border-top: 1px solid #f0eff4;
+    padding-top: 7px;
+  }
+
+  .inner-page .row-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .inner-page .filter-tab-pill,
+  .inner-page .filter-select select,
+  .inner-page .result-count,
+  .inner-page .schedule-cell,
+  .inner-page .kanban-col-header,
+  .inner-page .calendar-day-heading,
+  .inner-page .cal-act-time,
+  .inner-page .no-day-events,
+  .inner-page .cal-add-day-btn,
+  .inner-page .report-card-body span,
+  .inner-page .report-card-body small,
+  .inner-page .report-category-label,
+  .inner-page .report-percent,
+  .inner-page .status-overview-row {
+    font-size: 0.875rem;
+  }
+
+  .inner-page .report-breakdown-row {
+    grid-template-columns: minmax(0, 1fr) minmax(52px, 0.9fr) 2.5rem;
+    gap: 8px;
+  }
+
+  .inner-page .report-category-label {
+    font-size: 0.8125rem;
+  }
+
+  .inner-page .row-total-tag {
+    font-size: 0.75rem;
+  }
+
+  .inner-page .status-overview-row {
+    grid-template-columns: minmax(70px, auto) minmax(36px, 1fr) 1.5rem;
+    gap: 7px;
+  }
+
+  .inner-page .status-overview-row .status-badge {
+    font-size: 0.75rem;
+  }
+
+  .inner-page .list-head {
+    font-size: 0.75rem;
+  }
+
+  .inner-page .full-title,
+  .inner-page .kanban-title,
+  .inner-page .cal-act-title {
+    font-size: 1rem;
   }
 }
